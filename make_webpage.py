@@ -20,12 +20,9 @@ def build_html():
 
     print(f"Loaded {len(shades)} valid shades.")
 
-    # Sort shades by family then code
     shades.sort(key=lambda x: (x.get('family', 'Other'), x.get('code', ''), x.get('name', '')))
-
     shades_json = json.dumps(shades)
 
-    # Representative generic colors for each family
     family_colors = {
         'all': 'conic-gradient(from 180deg, #ef4444, #f59e0b, #10b981, #06b6d4, #3b82f6, #8b5cf6, #ec4899, #ef4444)',
         'blue': '#2563eb',
@@ -71,7 +68,7 @@ def build_html():
         body {
             background: var(--bg);
             color: var(--text);
-            padding-bottom: 110px;
+            padding-bottom: 70px;
             min-height: 100vh;
         }
         header {
@@ -166,7 +163,6 @@ def build_html():
             color: var(--text-muted);
         }
         
-        /* Indicative Color Filter Strip */
         .filter-strip-wrapper {
             position: relative;
             width: 100%;
@@ -604,81 +600,62 @@ def build_html():
             margin-top: 4px;
         }
 
-        /* Comparison Drawer Bar at bottom */
-        .drawer {
+        /* Sleek Floating Comparison Pill (Non-intrusive on mobile) */
+        .floating-compare-pill {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(21, 30, 46, 0.96);
-            backdrop-filter: blur(16px);
-            border-top: 1px solid var(--border);
-            padding: 12px 20px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
-            z-index: 200;
-            transform: translateY(100%);
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .drawer.open {
-            transform: translateY(0);
-        }
-        .drawer-content {
-            max-width: 1400px;
-            margin: 0 auto;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 8px 14px 8px 10px;
+            border-radius: 999px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.7), 0 0 15px rgba(56, 189, 248, 0.2);
+            z-index: 300;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-        .drawer-swatches {
-            display: flex;
             gap: 10px;
-            flex-wrap: wrap;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
+            max-width: 92vw;
+        }
+        .floating-compare-pill.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+        .floating-compare-pill:hover {
+            border-color: var(--accent);
+            transform: translateX(-50%) translateY(-2px);
+        }
+        .pill-swatches-row {
+            display: flex;
+            gap: 5px;
             align-items: center;
         }
-        .drawer-swatch {
+        .pill-mini-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+            flex-shrink: 0;
+        }
+        .pill-label {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--text);
             display: flex;
             align-items: center;
             gap: 6px;
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            padding: 5px 8px;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            white-space: nowrap;
         }
-        .drawer-swatch-box {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .drawer-move-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 0.8rem;
-            padding: 0 3px;
-        }
-        .drawer-move-btn:hover:not(:disabled) {
-            color: var(--accent);
-        }
-        .drawer-move-btn:disabled {
-            opacity: 0.2;
-            cursor: not-allowed;
-        }
-        .remove-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.1rem;
-            line-height: 1;
-            margin-left: 2px;
-        }
-        .remove-btn:hover {
-            color: #ef4444;
+        .pill-action-tag {
+            background: var(--accent);
+            color: #0b0f19;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
         }
 
         .toast {
@@ -792,18 +769,12 @@ def build_html():
     <div class="compare-columns" id="compare-columns"></div>
 </div>
 
-<!-- Bottom Drawer Bar -->
-<div class="drawer" id="drawer">
-    <div class="drawer-content">
-        <div style="font-size: 0.92rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-            📌 Compare (<span id="pinned-count">0</span>)
-        </div>
-        <div class="drawer-swatches" id="drawer-swatches"></div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-primary" onclick="openCompareModal()">Open Comparison</button>
-            <button class="btn" onclick="shareComparisonLink()">🔗 Share Link</button>
-            <button class="btn" onclick="clearPalette()">Clear</button>
-        </div>
+<!-- Non-intrusive Floating Comparison Pill on Mobile/Desktop -->
+<div class="floating-compare-pill" id="floating-pill" onclick="openCompareModal()">
+    <div class="pill-swatches-row" id="pill-swatches"></div>
+    <div class="pill-label">
+        <span>Compare</span>
+        <span class="pill-action-tag" id="pill-count">0</span>
     </div>
 </div>
 
@@ -813,7 +784,7 @@ def build_html():
     const allShades = __SHADES_JSON__;
     const familyColors = __FAMILY_COLORS_JSON__;
 
-    const STORAGE_KEY = 'ap_compare_palette_v1';
+    const STORAGE_KEY = 'ap_pinned_shades';
 
     let activeFamily = 'all';
     let searchQuery = '';
@@ -825,9 +796,9 @@ def build_html():
     const searchInput = document.getElementById('search');
     const filterStrip = document.getElementById('filter-strip');
     const stats = document.getElementById('stats');
-    const drawer = document.getElementById('drawer');
-    const drawerSwatches = document.getElementById('drawer-swatches');
-    const pinnedCount = document.getElementById('pinned-count');
+    const floatingPill = document.getElementById('floating-pill');
+    const pillSwatches = document.getElementById('pill-swatches');
+    const pillCount = document.getElementById('pill-count');
     const compareCountTop = document.getElementById('compare-count-top');
     const toast = document.getElementById('toast');
     const countAll = document.getElementById('count-all');
@@ -960,7 +931,7 @@ def build_html():
                     pinnedShades.push(found);
                 }
             });
-            renderDrawer();
+            renderFloatingPill();
             if (openModalFromUrl && pinnedShades.length > 0) {
                 openCompareModal();
             }
@@ -1091,7 +1062,7 @@ def build_html():
         }
     }
 
-    // Comparison Drawer & Fullscreen Comparison Mode
+    // Comparison Management & Fullscreen Comparison Mode
     function togglePin(shade) {
         const idx = pinnedShades.findIndex(s => s.code === shade.code);
         if (idx > -1) {
@@ -1101,7 +1072,7 @@ def build_html():
             showToast(`Added ${shade.code} ${shade.name} to compare`);
         }
         saveState();
-        renderDrawer();
+        renderFloatingPill();
         render();
     }
 
@@ -1111,35 +1082,31 @@ def build_html():
         const item = pinnedShades.splice(index, 1)[0];
         pinnedShades.splice(newIndex, 0, item);
         saveState();
-        renderDrawer();
+        renderFloatingPill();
         renderCompareColumns();
     }
 
     function clearPalette() {
         pinnedShades = [];
         saveState();
-        renderDrawer();
+        renderFloatingPill();
         render();
         renderCompareColumns();
     }
 
-    function renderDrawer() {
-        pinnedCount.textContent = pinnedShades.length;
-        compareCountTop.textContent = pinnedShades.length;
-        if (pinnedShades.length > 0) {
-            drawer.classList.add('open');
-            drawerSwatches.innerHTML = pinnedShades.map((s, idx) => `
-                <div class="drawer-swatch">
-                    <button class="drawer-move-btn" ${idx === 0 ? 'disabled' : ''} onclick="moveCompare(${idx}, -1)">◀</button>
-                    <div class="drawer-swatch-box" style="background: ${s.hex || '#ccc'}"></div>
-                    <strong>${s.code || ''}</strong> ${s.name || ''}
-                    <button class="drawer-move-btn" ${idx === pinnedShades.length - 1 ? 'disabled' : ''} onclick="moveCompare(${idx}, 1)">▶</button>
-                    <button class="remove-btn" onclick="togglePin(${JSON.stringify(s).replace(/"/g, '&quot;')})">×</button>
-                </div>
+    function renderFloatingPill() {
+        const count = pinnedShades.length;
+        compareCountTop.textContent = count;
+        pillCount.textContent = count;
+
+        if (count > 0) {
+            floatingPill.classList.add('visible');
+            pillSwatches.innerHTML = pinnedShades.map(s => `
+                <div class="pill-mini-dot" style="background: ${s.hex || '#ccc'};" title="${s.code} ${s.name}"></div>
             `).join('');
         } else {
-            drawer.classList.remove('open');
-            drawerSwatches.innerHTML = '';
+            floatingPill.classList.remove('visible');
+            pillSwatches.innerHTML = '';
         }
     }
 
@@ -1190,7 +1157,6 @@ def build_html():
         }).join('');
     }
 
-    // Keyboard Shortcuts (Esc to close, Arrow keys for prev/next)
     window.addEventListener('keydown', (e) => {
         if (modal.classList.contains('active')) {
             if (e.key === 'Escape') closeModal();
