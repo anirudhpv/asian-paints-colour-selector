@@ -1,0 +1,18 @@
+[driver] waiting for main scrape to finish...
+[driver] main scrape exited at Wed 16 Sep 09:49:58 CDT 2026
+[driver] mop-up pass (retry failed urls)...
+total=2224 done=2054 todo=170 conc=25
+progress 100/170 ok=100 partial=0 fail=0 elapsed=99s rate=1.0/s eta=69s
+FINISHED run=170 ok=163 partial=0 fail=7 elapsed=233s
+[driver] fixing incomplete records...
+total=2217 incomplete=1
+FAILED https://www.asianpaints.com/colour-catalogue/off-white-wall-colours/old-lace-m0950.html 404 Client Error: Not Found for url: https://static.asianpaints.com/content/dam/asian_paints/colours/swatches/m0950.png
+fixed=0 still_broken=1
+[driver] building PDF...
+shades=2216 families=11 pages=81 out=/home/apv/.openclaw/workspace/asian_paints_complete_shade_book.pdf
+per-family: {'Blue': 165, 'Brown': 339, 'Green': 590, 'Grey': 174, 'Off-White': 135, 'Orange': 135, 'Pink': 227, 'Purple': 244, 'Red': 61, 'White': 13, 'Yellow': 133}
+[driver] verifying PDF...
+-rw-rw-r-- 1 apv apv 193K Sep 16 09:53 /home/apv/.openclaw/workspace/asian_paints_complete_shade_book.pdf
+Pages:           81
+Page size:       841.89 x 595.276 pts (A4)
+[driver] DONE Wed 16 Sep 09:53:57 CDT 2026

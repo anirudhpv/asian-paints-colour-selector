@@ -4,3 +4,22 @@ progress 200/2224 ok=200 partial=0 fail=0 elapsed=81s rate=2.5/s eta=822s
 progress 300/2224 ok=300 partial=0 fail=0 elapsed=111s rate=2.7/s eta=713s
 progress 400/2224 ok=396 partial=0 fail=4 elapsed=138s rate=2.9/s eta=629s
 progress 500/2224 ok=495 partial=0 fail=5 elapsed=170s rate=2.9/s eta=585s
+progress 600/2224 ok=586 partial=0 fail=14 elapsed=247s rate=2.4/s eta=669s
+progress 700/2224 ok=636 partial=0 fail=64 elapsed=495s rate=1.4/s eta=1079s
+progress 800/2224 ok=736 partial=0 fail=64 elapsed=501s rate=1.6/s eta=891s
+progress 900/2224 ok=836 partial=0 fail=64 elapsed=510s rate=1.8/s eta=750s
+progress 1000/2224 ok=929 partial=0 fail=71 elapsed=523s rate=1.9/s eta=641s
+progress 1100/2224 ok=1027 partial=0 fail=73 elapsed=528s rate=2.1/s eta=539s
+progress 1200/2224 ok=1125 partial=0 fail=75 elapsed=530s rate=2.3/s eta=452s
+progress 1300/2224 ok=1223 partial=0 fail=77 elapsed=531s rate=2.4/s eta=378s
+PARTIAL https://www.asianpaints.com/colour-catalogue/off-white-wall-colours/old-lace-m0950.html: name=Old lace-N code=m0950 hex=None
+progress 1400/2224 ok=1322 partial=1 fail=77 elapsed=533s rate=2.6/s eta=314s
+progress 1500/2224 ok=1421 partial=1 fail=78 elapsed=536s rate=2.8/s eta=259s
+progress 1600/2224 ok=1516 partial=1 fail=83 elapsed=540s rate=3.0/s eta=211s
+progress 1700/2224 ok=1604 partial=1 fail=95 elapsed=646s rate=2.6/s eta=199s
+progress 1800/2224 ok=1690 partial=1 fail=109 elapsed=660s rate=2.7/s eta=155s
+progress 1900/2224 ok=1785 partial=1 fail=114 elapsed=678s rate=2.8/s eta=116s
+progress 2000/2224 ok=1882 partial=1 fail=117 elapsed=697s rate=2.9/s eta=78s
+progress 2100/2224 ok=1951 partial=1 fail=148 elapsed=890s rate=2.4/s eta=53s
+progress 2200/2224 ok=2040 partial=1 fail=159 elapsed=1006s rate=2.2/s eta=11s
+FINISHED run=2224 ok=2058 partial=1 fail=165 elapsed=1104s

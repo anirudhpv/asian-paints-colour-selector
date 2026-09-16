@@ -172,8 +172,9 @@ class Book:
                 if not page_open:
                     self.family_header(fam, len(shades), continued=(idx > 0))
                     page_open = True
-                col = idx % COLS
-                row = idx // COLS
+                pos = idx % (COLS * ROWS)
+                col = pos % COLS
+                row = pos // COLS
                 x = MARGIN + col * (CARD_W + GAP)
                 y_top = GRID_TOP - row * (CARD_H + GAP)
                 self.swatch(x, y_top - CARD_H, s)
