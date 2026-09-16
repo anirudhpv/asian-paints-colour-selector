@@ -578,7 +578,7 @@ def build_html():
             border-radius: 12px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 6px;
             color: #fff;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
@@ -603,12 +603,18 @@ def build_html():
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            background: rgba(255, 255, 255, 0.14);
-            padding: 3px 8px;
-            border-radius: 6px;
+            padding: 4px 10px 4px 6px;
+            border-radius: 999px;
             width: fit-content;
             margin-top: 2px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(6px);
+            transition: all 0.15s;
+        }
+        .compare-family-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 6px currentColor;
         }
         .compare-col-meta {
             display: flex;
@@ -851,10 +857,8 @@ def build_html():
     const compareColumns = document.getElementById('compare-columns');
     const compareModalCount = document.getElementById('compare-modal-count');
 
-    // Populate family count for all
     countAll.textContent = allShades.length;
 
-    // Extract families and counts
     const familyCounts = {};
     allShades.forEach(s => {
         const f = s.family || 'other';
@@ -911,6 +915,11 @@ def build_html():
         return (0.299 * r + 0.587 * g + 0.114 * b);
     }
 
+    function getFamilyColor(fam) {
+        const key = (fam || '').toLowerCase();
+        return familyColors[key] || '#94a3b8';
+    }
+
     function copyText(text, label) {
         navigator.clipboard.writeText(text);
         showToast(label ? `${label}: ${text} copied!` : `Copied ${text}!`);
@@ -922,7 +931,6 @@ def build_html():
         setTimeout(() => toast.classList.remove('show'), 2200);
     }
 
-    // Storage and URL persistence
     function saveState() {
         const codes = pinnedShades.map(s => s.code);
         try {
@@ -1024,7 +1032,6 @@ def build_html():
         }
     }
 
-    // Open single shade fullscreen modal
     function openModal(index) {
         currentShadeIndex = index;
         const shade = filteredShades[index];
@@ -1096,7 +1103,6 @@ def build_html():
         }
     }
 
-    // Comparison Management & Fullscreen Comparison Mode
     function togglePin(shade) {
         const idx = pinnedShades.findIndex(s => s.code === shade.code);
         if (idx > -1) {
@@ -1168,7 +1174,15 @@ def build_html():
             const {r, g, b} = hexToRgb(hex);
             const isFirst = idx === 0;
             const isLast = idx === pinnedShades.length - 1;
+            const fam = (s.family || 'other').toLowerCase();
             const familyName = s.family ? (s.family.charAt(0).toUpperCase() + s.family.slice(1)) : 'Wall Shade';
+            const famBaseHex = getFamilyColor(fam);
+            const famRgb = hexToRgb(famBaseHex.startsWith('#') ? famBaseHex : '#64748b');
+            
+            // Light transparent shade of the tinting color
+            const badgeBg = `rgba(${famRgb.r}, ${famRgb.g}, ${famRgb.b}, 0.28)`;
+            const badgeBorder = `rgba(${famRgb.r}, ${famRgb.g}, ${famRgb.b}, 0.55)`;
+            const dotColor = famBaseHex.startsWith('#') ? famBaseHex : '#38bdf8';
 
             return `
                 <div class="compare-col" style="background: ${hex};">
@@ -1182,7 +1196,10 @@ def build_html():
                     <div class="compare-col-details">
                         <div class="compare-col-code">${s.code || '—'}</div>
                         <div class="compare-col-name">${s.name || '—'}</div>
-                        <div class="compare-col-family">🏷️ ${familyName}</div>
+                        <div class="compare-col-family" style="background: ${badgeBg}; border: 1px solid ${badgeBorder}; color: #ffffff;">
+                            <span class="compare-family-dot" style="background: ${dotColor};"></span>
+                            <span>${familyName}</span>
+                        </div>
                         <div class="compare-col-meta">
                             <span class="compare-col-hex" onclick="copyText('${hex}', 'HEX')">${hex.toUpperCase()}</span>
                             <span class="compare-col-rgb">RGB(${r}, ${g}, ${b})</span>
