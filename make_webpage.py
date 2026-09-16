@@ -70,12 +70,13 @@ def build_html():
             color: var(--text);
             padding-bottom: 70px;
             min-height: 100vh;
+            text-rendering: optimizeLegibility;
         }
         header {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(11, 15, 25, 0.95);
+            background: rgba(11, 15, 25, 0.96);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
             padding: 12px 16px;
@@ -229,7 +230,7 @@ def build_html():
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 12px;
         }
         .card {
@@ -239,17 +240,18 @@ def build_html():
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+            transition: transform 0.15s, border-color 0.15s;
             cursor: pointer;
             position: relative;
+            content-visibility: auto;
+            contain-intrinsic-size: 160px 190px;
         }
         .card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.6);
             border-color: rgba(56, 189, 248, 0.4);
         }
         .swatch-box {
-            height: 125px;
+            height: 120px;
             width: 100%;
             position: relative;
             display: flex;
@@ -258,8 +260,7 @@ def build_html():
             padding: 8px;
         }
         .pin-btn {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.55);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
             width: 32px;
@@ -270,12 +271,11 @@ def build_html():
             align-items: center;
             justify-content: center;
             font-size: 0.85rem;
-            opacity: 0.85;
-            transition: all 0.15s;
+            opacity: 0.9;
+            transition: transform 0.15s, background 0.15s;
             z-index: 2;
         }
         .pin-btn:hover {
-            opacity: 1;
             transform: scale(1.15);
         }
         .pin-btn.pinned {
@@ -325,6 +325,18 @@ def build_html():
             text-transform: capitalize;
         }
 
+        /* Sentinel for Infinite Scroll */
+        #scroll-sentinel {
+            height: 40px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+
         /* Fullscreen Shade Modal */
         .modal {
             position: fixed;
@@ -339,7 +351,7 @@ def build_html():
             padding: 24px;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.25s ease;
+            transition: opacity 0.2s ease;
         }
         .modal.active {
             opacity: 1;
@@ -476,7 +488,7 @@ def build_html():
             flex-direction: column;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.25s ease;
+            transition: opacity 0.2s ease;
         }
         .compare-modal.active {
             opacity: 1;
@@ -507,6 +519,7 @@ def build_html():
             display: flex;
             height: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .compare-col {
             flex: 1;
@@ -517,7 +530,7 @@ def build_html():
             justify-content: space-between;
             padding: 20px;
             position: relative;
-            transition: all 0.2s;
+            transition: background 0.15s;
             border-right: 1px solid rgba(0, 0, 0, 0.15);
         }
         .compare-col-top {
@@ -578,7 +591,7 @@ def build_html():
             border-radius: 12px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 5px;
             color: #fff;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
@@ -608,7 +621,6 @@ def build_html():
             width: fit-content;
             margin-top: 2px;
             backdrop-filter: blur(6px);
-            transition: all 0.15s;
         }
         .compare-family-dot {
             width: 10px;
@@ -657,7 +669,7 @@ def build_html():
             align-items: center;
             gap: 10px;
             cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
             max-width: 92vw;
         }
         .floating-compare-pill.visible {
@@ -710,7 +722,7 @@ def build_html():
             font-weight: 700;
             font-size: 0.85rem;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1000;
         }
         .toast.show {
@@ -739,7 +751,6 @@ def build_html():
             <input type="text" id="search" class="search-input" placeholder="Search by shade code (e.g. 8499, 0N68, L101) or name (e.g. Eclipse)...">
         </div>
 
-        <!-- Indicative Color Filter Strip -->
         <div class="filter-strip-wrapper">
             <div class="filter-strip" id="filter-strip">
                 <div class="color-chip active" data-family="all">
@@ -757,6 +768,7 @@ def build_html():
         Showing shades...
     </div>
     <div class="grid" id="grid"></div>
+    <div id="scroll-sentinel"></div>
 </main>
 
 <!-- Fullscreen Single Shade Modal -->
@@ -825,12 +837,14 @@ def build_html():
     const familyColors = __FAMILY_COLORS_JSON__;
 
     const STORAGE_KEY = '***';
+    const PAGE_SIZE = 60; // Render in lightweight 60-card batches for 60fps mobile speed
 
     let activeFamily = 'all';
     let searchQuery = '';
     let pinnedShades = [];
     let currentShadeIndex = 0;
     let filteredShades = [...allShades];
+    let renderedCount = 0;
 
     const grid = document.getElementById('grid');
     const searchInput = document.getElementById('search');
@@ -842,6 +856,7 @@ def build_html():
     const compareCountTop = document.getElementById('compare-count-top');
     const toast = document.getElementById('toast');
     const countAll = document.getElementById('count-all');
+    const sentinel = document.getElementById('scroll-sentinel');
 
     // Modal elements
     const modal = document.getElementById('modal');
@@ -858,6 +873,17 @@ def build_html():
     const compareModalCount = document.getElementById('compare-modal-count');
 
     countAll.textContent = allShades.length;
+
+    // Precalculate RGBs for all shades once to eliminate runtime calculations
+    allShades.forEach(s => {
+        let c = (s.hex || '#ffffff').replace('#', '');
+        if (c.length === 3) c = c.split('').map(x => x + x).join('');
+        const num = parseInt(c, 16);
+        s._r = (num >> 16) & 255;
+        s._g = (num >> 8) & 255;
+        s._b = num & 255;
+        s._lum = 0.299 * s._r + 0.587 * s._g + 0.114 * s._b;
+    });
 
     const familyCounts = {};
     allShades.forEach(s => {
@@ -882,7 +908,7 @@ def build_html():
             document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
             chip.classList.add('active');
             activeFamily = f;
-            render();
+            applyFilter();
         };
         filterStrip.appendChild(chip);
     });
@@ -891,29 +917,18 @@ def build_html():
         document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
         document.querySelector('[data-family="all"]').classList.add('active');
         activeFamily = 'all';
-        render();
+        applyFilter();
     };
 
+    // Debounced search for instant lag-free typing on phone
+    let searchDebounceTimer;
     searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value.toLowerCase().trim();
-        render();
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+            searchQuery = e.target.value.toLowerCase().trim();
+            applyFilter();
+        }, 60);
     });
-
-    function hexToRgb(hex) {
-        let c = (hex || '#ffffff').replace('#', '');
-        if (c.length === 3) c = c.split('').map(x => x + x).join('');
-        const num = parseInt(c, 16);
-        return {
-            r: (num >> 16) & 255,
-            g: (num >> 8) & 255,
-            b: num & 255
-        };
-    }
-
-    function getLuminance(hex) {
-        const {r, g, b} = hexToRgb(hex);
-        return (0.299 * r + 0.587 * g + 0.114 * b);
-    }
 
     function getFamilyColor(fam) {
         const key = (fam || '').toLowerCase();
@@ -928,7 +943,7 @@ def build_html():
     function showToast(msg) {
         toast.textContent = msg;
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2200);
+        setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
     function saveState() {
@@ -1038,9 +1053,7 @@ def build_html():
         if (!shade) return;
 
         const hex = shade.hex || '#475569';
-        const {r, g, b} = hexToRgb(hex);
-        const lum = getLuminance(hex);
-        const textColor = lum > 140 ? '#0f172a' : '#f8fafc';
+        const textColor = shade._lum > 140 ? '#0f172a' : '#f8fafc';
 
         modal.style.background = hex;
         modal.style.color = textColor;
@@ -1048,7 +1061,7 @@ def build_html():
         modalCode.textContent = shade.code || '—';
         modalName.textContent = shade.name || '—';
         modalHex.textContent = hex.toUpperCase();
-        modalRgb.textContent = `RGB(${r}, ${g}, ${b})`;
+        modalRgb.textContent = `RGB(${shade._r}, ${shade._g}, ${shade._b})`;
         modalFamily.textContent = shade.family ? (shade.family.charAt(0).toUpperCase() + shade.family.slice(1)) : 'Wall Shade';
 
         updateModalPinState();
@@ -1083,8 +1096,7 @@ def build_html():
     function copyModalRgb() {
         const shade = filteredShades[currentShadeIndex];
         if (shade) {
-            const {r, g, b} = hexToRgb(shade.hex);
-            copyText(`rgb(${r}, ${g}, ${b})`, 'RGB');
+            copyText(`rgb(${shade._r}, ${shade._g}, ${shade._b})`, 'RGB');
         }
     }
 
@@ -1113,7 +1125,7 @@ def build_html():
         }
         saveState();
         renderFloatingPill();
-        render();
+        updateCardPinStyles();
     }
 
     function moveCompare(index, direction) {
@@ -1130,7 +1142,7 @@ def build_html():
         pinnedShades = [];
         saveState();
         renderFloatingPill();
-        render();
+        updateCardPinStyles();
         renderCompareColumns();
     }
 
@@ -1171,17 +1183,15 @@ def build_html():
         }
         compareColumns.innerHTML = pinnedShades.map((s, idx) => {
             const hex = s.hex || '#475569';
-            const {r, g, b} = hexToRgb(hex);
             const isFirst = idx === 0;
             const isLast = idx === pinnedShades.length - 1;
             const fam = (s.family || 'other').toLowerCase();
             const familyName = s.family ? (s.family.charAt(0).toUpperCase() + s.family.slice(1)) : 'Wall Shade';
             const famBaseHex = getFamilyColor(fam);
-            const famRgb = hexToRgb(famBaseHex.startsWith('#') ? famBaseHex : '#64748b');
             
-            // Light transparent shade of the tinting color
-            const badgeBg = `rgba(${famRgb.r}, ${famRgb.g}, ${famRgb.b}, 0.28)`;
-            const badgeBorder = `rgba(${famRgb.r}, ${famRgb.g}, ${famRgb.b}, 0.55)`;
+            // Fast rgb parsing from precalculated values
+            const badgeBg = `rgba(${s._r}, ${s._g}, ${s._b}, 0.35)`;
+            const badgeBorder = `rgba(${s._r}, ${s._g}, ${s._b}, 0.65)`;
             const dotColor = famBaseHex.startsWith('#') ? famBaseHex : '#38bdf8';
 
             return `
@@ -1202,12 +1212,87 @@ def build_html():
                         </div>
                         <div class="compare-col-meta">
                             <span class="compare-col-hex" onclick="copyText('${hex}', 'HEX')">${hex.toUpperCase()}</span>
-                            <span class="compare-col-rgb">RGB(${r}, ${g}, ${b})</span>
+                            <span class="compare-col-rgb">RGB(${s._r}, ${s._g}, ${s._b})</span>
                         </div>
                     </div>
                 </div>
             `;
         }).join('');
+    }
+
+    function createCardHTML(s, idx) {
+        const isPinned = pinnedShades.some(p => p.code === s.code);
+        const hex = s.hex || '#475569';
+        return `
+            <div class="card" onclick="openModal(${idx})" data-code="${s.code}">
+                <div class="swatch-box" style="background: ${hex};">
+                    <button class="pin-btn ${isPinned ? 'pinned' : ''}" title="Pin to Compare" onclick="event.stopPropagation(); togglePin(${JSON.stringify(s).replace(/"/g, '&quot;')})">
+                        📌
+                    </button>
+                </div>
+                <div class="card-details">
+                    <div class="shade-code">${s.code || '—'}</div>
+                    <div class="shade-name" title="${s.name || ''}">${s.name || '—'}</div>
+                    <div class="meta-row">
+                        <span class="hex-code" onclick="event.stopPropagation(); copyText('${hex}', 'HEX')">${hex.toUpperCase()}</span>
+                        <span class="family-tag">${s.family || ''}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateCardPinStyles() {
+        document.querySelectorAll('.card').forEach(card => {
+            const code = card.dataset.code;
+            const btn = card.querySelector('.pin-btn');
+            if (btn) {
+                const isPinned = pinnedShades.some(p => p.code === code);
+                btn.classList.toggle('pinned', isPinned);
+            }
+        });
+    }
+
+    function renderMoreCards() {
+        if (renderedCount >= filteredShades.length) {
+            sentinel.style.display = 'none';
+            return;
+        }
+
+        const nextBatch = filteredShades.slice(renderedCount, renderedCount + PAGE_SIZE);
+        const fragmentHTML = nextBatch.map((s, i) => createCardHTML(s, renderedCount + i)).join('');
+        grid.insertAdjacentHTML('beforeend', fragmentHTML);
+        renderedCount += nextBatch.length;
+
+        sentinel.style.display = renderedCount >= filteredShades.length ? 'none' : 'flex';
+        sentinel.textContent = `Loaded ${renderedCount} of ${filteredShades.length}...`;
+    }
+
+    // High performance IntersectionObserver for seamless infinite scrolling
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            renderMoreCards();
+        }
+    }, { rootMargin: '400px' });
+    observer.observe(sentinel);
+
+    function applyFilter() {
+        filteredShades = allShades.filter(s => {
+            const matchesFamily = (activeFamily === 'all' || s.family === activeFamily);
+            const matchesSearch = !searchQuery || 
+                (s.name && s.name.toLowerCase().includes(searchQuery)) || 
+                (s.code && s.code.toLowerCase().includes(searchQuery)) ||
+                (s.hex && s.hex.toLowerCase().includes(searchQuery));
+            return matchesFamily && matchesSearch;
+        });
+
+        stats.textContent = `Showing ${filteredShades.length.toLocaleString()} of ${allShades.length.toLocaleString()} shades (Tap card for fullscreen view)`;
+
+        // Reset and render first lightweight chunk instantly
+        grid.innerHTML = '';
+        renderedCount = 0;
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        renderMoreCards();
     }
 
     window.addEventListener('keydown', (e) => {
@@ -1221,42 +1306,7 @@ def build_html():
         }
     });
 
-    function render() {
-        filteredShades = allShades.filter(s => {
-            const matchesFamily = (activeFamily === 'all' || s.family === activeFamily);
-            const matchesSearch = !searchQuery || 
-                (s.name && s.name.toLowerCase().includes(searchQuery)) || 
-                (s.code && s.code.toLowerCase().includes(searchQuery)) ||
-                (s.hex && s.hex.toLowerCase().includes(searchQuery));
-            return matchesFamily && matchesSearch;
-        });
-
-        stats.textContent = `Showing ${filteredShades.length.toLocaleString()} of ${allShades.length.toLocaleString()} shades (Tap card for fullscreen view)`;
-
-        grid.innerHTML = filteredShades.map((s, idx) => {
-            const isPinned = pinnedShades.some(p => p.code === s.code);
-            const hex = s.hex || '#475569';
-            return `
-                <div class="card" onclick="openModal(${idx})">
-                    <div class="swatch-box" style="background: ${hex};">
-                        <button class="pin-btn ${isPinned ? 'pinned' : ''}" title="Pin to Compare" onclick="event.stopPropagation(); togglePin(${JSON.stringify(s).replace(/"/g, '&quot;')})">
-                            📌
-                        </button>
-                    </div>
-                    <div class="card-details">
-                        <div class="shade-code">${s.code || '—'}</div>
-                        <div class="shade-name" title="${s.name || ''}">${s.name || '—'}</div>
-                        <div class="meta-row">
-                            <span class="hex-code" onclick="event.stopPropagation(); copyText('${hex}', 'HEX')">${hex.toUpperCase()}</span>
-                            <span class="family-tag">${s.family || ''}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    render();
+    applyFilter();
     restoreState();
 </script>
 </body>
