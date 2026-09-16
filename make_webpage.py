@@ -510,7 +510,7 @@ def build_html():
         }
         .compare-col {
             flex: 1;
-            min-width: 150px;
+            min-width: 155px;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -571,33 +571,67 @@ def build_html():
             transform: scale(1.1);
         }
         .compare-col-details {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(14px);
             border: 1px solid rgba(255, 255, 255, 0.25);
             padding: 14px;
             border-radius: 12px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
             color: #fff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
         .compare-col-code {
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             font-weight: 800;
+            letter-spacing: 0.02em;
         }
         .compare-col-name {
-            font-size: 0.95rem;
-            opacity: 0.85;
+            font-size: 0.98rem;
+            font-weight: 600;
+            opacity: 0.92;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        .compare-col-family {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(255, 255, 255, 0.14);
+            padding: 3px 8px;
+            border-radius: 6px;
+            width: fit-content;
+            margin-top: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .compare-col-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.78rem;
+        }
         .compare-col-hex {
             font-family: ui-monospace, monospace;
-            font-size: 0.85rem;
+            font-weight: 700;
             color: var(--accent);
             cursor: pointer;
-            margin-top: 4px;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .compare-col-rgb {
+            font-family: ui-monospace, monospace;
+            font-size: 0.72rem;
+            opacity: 0.8;
         }
 
         /* Sleek Floating Comparison Pill (Non-intrusive on mobile) */
@@ -784,7 +818,7 @@ def build_html():
     const allShades = __SHADES_JSON__;
     const familyColors = __FAMILY_COLORS_JSON__;
 
-    const STORAGE_KEY = 'ap_pinned_shades';
+    const STORAGE_KEY = '***';
 
     let activeFamily = 'all';
     let searchQuery = '';
@@ -1102,7 +1136,7 @@ def build_html():
         if (count > 0) {
             floatingPill.classList.add('visible');
             pillSwatches.innerHTML = pinnedShades.map(s => `
-                <div class="pill-mini-dot" style="background: ${s.hex || '#ccc'};" title="${s.code} ${s.name}"></div>
+                <div class="pill-mini-dot" style="background: ${s.hex || '#ccc'};" title="${s.code} ${s.name} (${s.family || ''})"></div>
             `).join('');
         } else {
             floatingPill.classList.remove('visible');
@@ -1132,13 +1166,12 @@ def build_html():
         compareColumns.innerHTML = pinnedShades.map((s, idx) => {
             const hex = s.hex || '#475569';
             const {r, g, b} = hexToRgb(hex);
-            const lum = getLuminance(hex);
-            const textColor = lum > 140 ? '#0f172a' : '#f8fafc';
             const isFirst = idx === 0;
             const isLast = idx === pinnedShades.length - 1;
+            const familyName = s.family ? (s.family.charAt(0).toUpperCase() + s.family.slice(1)) : 'Wall Shade';
 
             return `
-                <div class="compare-col" style="background: ${hex}; color: ${textColor};">
+                <div class="compare-col" style="background: ${hex};">
                     <div class="compare-col-top">
                         <div class="order-btn-group">
                             <button class="order-btn" ${isFirst ? 'disabled' : ''} title="Move Left" onclick="moveCompare(${idx}, -1)">←</button>
@@ -1149,8 +1182,11 @@ def build_html():
                     <div class="compare-col-details">
                         <div class="compare-col-code">${s.code || '—'}</div>
                         <div class="compare-col-name">${s.name || '—'}</div>
-                        <div class="compare-col-hex" onclick="copyText('${hex}', 'HEX')">${hex.toUpperCase()}</div>
-                        <div style="font-size: 0.75rem; opacity: 0.85;">RGB(${r}, ${g}, ${b})</div>
+                        <div class="compare-col-family">🏷️ ${familyName}</div>
+                        <div class="compare-col-meta">
+                            <span class="compare-col-hex" onclick="copyText('${hex}', 'HEX')">${hex.toUpperCase()}</span>
+                            <span class="compare-col-rgb">RGB(${r}, ${g}, ${b})</span>
+                        </div>
                     </div>
                 </div>
             `;
