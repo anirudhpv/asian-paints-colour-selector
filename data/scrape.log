@@ -1,0 +1,6 @@
+total=2224 done=0 todo=2224 conc=25
+progress 100/2224 ok=100 partial=0 fail=0 elapsed=46s rate=2.2/s eta=985s
+progress 200/2224 ok=200 partial=0 fail=0 elapsed=81s rate=2.5/s eta=822s
+progress 300/2224 ok=300 partial=0 fail=0 elapsed=111s rate=2.7/s eta=713s
+progress 400/2224 ok=396 partial=0 fail=4 elapsed=138s rate=2.9/s eta=629s
+progress 500/2224 ok=495 partial=0 fail=5 elapsed=170s rate=2.9/s eta=585s
