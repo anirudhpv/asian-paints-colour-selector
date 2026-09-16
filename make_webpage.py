@@ -445,6 +445,7 @@ def build_html():
             justify-content: center;
             gap: 14px;
             z-index: 10;
+            flex-wrap: wrap;
         }
         .modal-action-btn {
             background: rgba(0, 0, 0, 0.55);
@@ -493,6 +494,8 @@ def build_html():
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
             z-index: 10;
         }
         .compare-title {
@@ -501,6 +504,7 @@ def build_html():
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
         .compare-columns {
             flex: 1;
@@ -766,19 +770,23 @@ def build_html():
         <button class="modal-action-btn" id="modal-pin-btn" onclick="toggleModalPin()">
             📌 Pin to Compare
         </button>
+        <button class="modal-action-btn" onclick="shareCurrentShade()">
+            🔗 Share Shade Link
+        </button>
     </div>
 </div>
 
-<!-- Fullscreen Side-by-Side Comparison Modal with Re-ordering -->
+<!-- Fullscreen Side-by-Side Comparison Modal with Re-ordering & Sharing -->
 <div class="compare-modal" id="compare-modal">
     <div class="compare-header">
         <div class="compare-title">
             ⚖️ Side-by-Side Comparison (<span id="compare-modal-count">0</span> shades)
-            <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted); margin-left: 12px;">Use ← → arrows to reorder shades</span>
+            <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted); margin-left: 8px;">(Use ← → to reorder)</span>
         </div>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="shareComparisonLink()">🔗 Share Comparison Link</button>
             <button class="btn" onclick="clearPalette()">Clear All</button>
-            <button class="btn btn-primary" onclick="closeCompareModal()">Close Comparison ✕</button>
+            <button class="btn" onclick="closeCompareModal()">Close ✕</button>
         </div>
     </div>
     <div class="compare-columns" id="compare-columns"></div>
@@ -791,8 +799,9 @@ def build_html():
             📌 Compare (<span id="pinned-count">0</span>)
         </div>
         <div class="drawer-swatches" id="drawer-swatches"></div>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="openCompareModal()">Open Comparison</button>
+            <button class="btn" onclick="shareComparisonLink()">🔗 Share Link</button>
             <button class="btn" onclick="clearPalette()">Clear</button>
         </div>
     </div>
@@ -803,6 +812,8 @@ def build_html():
 <script>
     const allShades = __SHADES_JSON__;
     const familyColors = __FAMILY_COLORS_JSON__;
+
+    const STORAGE_KEY = 'ap_compare_palette_v1';
 
     let activeFamily = 'all';
     let searchQuery = '';
@@ -903,7 +914,109 @@ def build_html():
     function showToast(msg) {
         toast.textContent = msg;
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
+        setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    // Storage and URL persistence
+    function saveState() {
+        const codes = pinnedShades.map(s => s.code);
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(codes));
+        } catch(e) {}
+
+        const url = new URL(window.location.href);
+        if (codes.length > 0) {
+            url.searchParams.set('compare', codes.join(','));
+        } else {
+            url.searchParams.delete('compare');
+        }
+        window.history.replaceState({}, '', url.toString());
+    }
+
+    function restoreState() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const compareParam = urlParams.get('compare') || urlParams.get('c') || urlParams.get('shades');
+        const shadeParam = urlParams.get('shade') || urlParams.get('s');
+
+        let codesToLoad = [];
+        let openModalFromUrl = false;
+
+        if (compareParam) {
+            codesToLoad = compareParam.split(',').map(c => c.trim().toLowerCase());
+            openModalFromUrl = true;
+        } else {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    codesToLoad = JSON.parse(stored).map(c => String(c).trim().toLowerCase());
+                }
+            } catch(e) {}
+        }
+
+        if (codesToLoad.length > 0) {
+            codesToLoad.forEach(code => {
+                const found = allShades.find(s => s.code && s.code.toLowerCase() === code);
+                if (found && !pinnedShades.some(p => p.code === found.code)) {
+                    pinnedShades.push(found);
+                }
+            });
+            renderDrawer();
+            if (openModalFromUrl && pinnedShades.length > 0) {
+                openCompareModal();
+            }
+        }
+
+        if (shadeParam && !compareParam) {
+            const idx = allShades.findIndex(s => s.code && s.code.toLowerCase() === shadeParam.toLowerCase());
+            if (idx > -1) {
+                openModal(idx);
+            }
+        }
+    }
+
+    function shareComparisonLink() {
+        if (pinnedShades.length === 0) {
+            showToast('Pin shades to create a share link!');
+            return;
+        }
+        const codes = pinnedShades.map(s => s.code).join(',');
+        const url = new URL(window.location.href);
+        url.searchParams.set('compare', codes);
+        url.searchParams.delete('shade');
+        
+        const shareUrl = url.toString();
+        if (navigator.share) {
+            navigator.share({
+                title: 'Asian Paints Palette Comparison',
+                text: `Check out this Asian Paints color palette: ${pinnedShades.map(s => s.code + ' ' + s.name).join(', ')}`,
+                url: shareUrl
+            }).catch(() => {
+                copyText(shareUrl, 'Share URL');
+            });
+        } else {
+            copyText(shareUrl, 'Comparison Link');
+        }
+    }
+
+    function shareCurrentShade() {
+        const shade = filteredShades[currentShadeIndex];
+        if (!shade) return;
+        const url = new URL(window.location.href);
+        url.searchParams.set('shade', shade.code);
+        url.searchParams.delete('compare');
+        
+        const shareUrl = url.toString();
+        if (navigator.share) {
+            navigator.share({
+                title: `Asian Paints - ${shade.code} ${shade.name}`,
+                text: `${shade.code} ${shade.name} (${shade.hex})`,
+                url: shareUrl
+            }).catch(() => {
+                copyText(shareUrl, 'Shade URL');
+            });
+        } else {
+            copyText(shareUrl, 'Shade Link');
+        }
     }
 
     // Open single shade fullscreen modal
@@ -987,6 +1100,7 @@ def build_html():
             pinnedShades.push(shade);
             showToast(`Added ${shade.code} ${shade.name} to compare`);
         }
+        saveState();
         renderDrawer();
         render();
     }
@@ -996,12 +1110,14 @@ def build_html():
         if (newIndex < 0 || newIndex >= pinnedShades.length) return;
         const item = pinnedShades.splice(index, 1)[0];
         pinnedShades.splice(newIndex, 0, item);
+        saveState();
         renderDrawer();
         renderCompareColumns();
     }
 
     function clearPalette() {
         pinnedShades = [];
+        saveState();
         renderDrawer();
         render();
         renderCompareColumns();
@@ -1122,6 +1238,7 @@ def build_html():
     }
 
     render();
+    restoreState();
 </script>
 </body>
 </html>
