@@ -325,7 +325,6 @@ def build_html():
             text-transform: capitalize;
         }
 
-        /* Sentinel for Infinite Scroll */
         #scroll-sentinel {
             height: 40px;
             width: 100%;
@@ -475,7 +474,7 @@ def build_html():
             transform: translateY(-2px);
         }
 
-        /* Fullscreen Comparison View */
+        /* Fullscreen Comparison View (Optimized for Mobile & Desktop) */
         .compare-modal {
             position: fixed;
             top: 0;
@@ -498,16 +497,16 @@ def build_html():
             background: rgba(11, 15, 25, 0.96);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
-            padding: 12px 20px;
+            padding: 10px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             z-index: 10;
         }
         .compare-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -523,12 +522,12 @@ def build_html():
         }
         .compare-col {
             flex: 1;
-            min-width: 155px;
+            min-width: 140px;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 20px;
+            padding: 16px 12px;
             position: relative;
             transition: background 0.15s;
             border-right: 1px solid rgba(0, 0, 0, 0.15);
@@ -537,7 +536,7 @@ def build_html():
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         .order-btn-group {
             display: flex;
@@ -548,20 +547,19 @@ def build_html():
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             transition: all 0.15s;
         }
         .order-btn:hover:not(:disabled) {
             background: rgba(0, 0, 0, 0.8);
             border-color: var(--accent);
-            transform: scale(1.08);
         }
         .order-btn:disabled {
-            opacity: 0.3;
+            opacity: 0.25;
             cursor: not-allowed;
         }
         .col-remove-btn {
@@ -569,41 +567,41 @@ def build_html():
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.15s;
         }
         .col-remove-btn:hover {
             background: rgba(239, 68, 68, 0.9);
-            transform: scale(1.1);
         }
         .compare-col-details {
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(14px);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 14px;
+            padding: 12px 10px;
             border-radius: 12px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 6px;
             color: #fff;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
         .compare-col-code {
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 800;
             letter-spacing: 0.02em;
+            line-height: 1.1;
         }
         .compare-col-name {
-            font-size: 0.98rem;
+            font-size: 0.88rem;
             font-weight: 600;
-            opacity: 0.92;
+            opacity: 0.95;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -611,45 +609,61 @@ def build_html():
         .compare-col-family {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.76rem;
+            gap: 5px;
+            font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 4px 10px 4px 6px;
+            letter-spacing: 0.04em;
+            padding: 3px 8px 3px 6px;
             border-radius: 999px;
             width: fit-content;
-            margin-top: 2px;
             backdrop-filter: blur(6px);
+            white-space: nowrap;
         }
         .compare-family-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            box-shadow: 0 0 6px currentColor;
+            flex-shrink: 0;
+            box-shadow: 0 0 5px currentColor;
         }
-        .compare-col-meta {
+        
+        /* Fully Responsive Clean Color Specs List (No Text Wrapping) */
+        .compare-col-specs {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-top: 2px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .spec-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 4px;
-            padding-top: 6px;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            font-size: 0.78rem;
-        }
-        .compare-col-hex {
             font-family: ui-monospace, monospace;
-            font-weight: 700;
-            color: var(--accent);
+            font-size: 0.75rem;
             cursor: pointer;
-            background: rgba(56, 189, 248, 0.12);
-            padding: 2px 6px;
+            padding: 2px 4px;
             border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .compare-col-rgb {
-            font-family: ui-monospace, monospace;
-            font-size: 0.72rem;
-            opacity: 0.8;
+        .spec-item:hover {
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--accent);
+        }
+        .spec-label {
+            color: var(--text-muted);
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .spec-val {
+            font-weight: 700;
+            letter-spacing: 0.02em;
         }
 
         /* Sleek Floating Comparison Pill (Non-intrusive on mobile) */
@@ -727,6 +741,22 @@ def build_html():
         }
         .toast.show {
             transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .compare-col {
+                min-width: 125px;
+                padding: 12px 8px;
+            }
+            .compare-col-details {
+                padding: 10px 8px;
+            }
+            .compare-col-code {
+                font-size: 1.15rem;
+            }
+            .compare-col-name {
+                font-size: 0.82rem;
+            }
         }
     </style>
 </head>
@@ -837,7 +867,7 @@ def build_html():
     const familyColors = __FAMILY_COLORS_JSON__;
 
     const STORAGE_KEY = '***';
-    const PAGE_SIZE = 60; // Render in lightweight 60-card batches for 60fps mobile speed
+    const PAGE_SIZE = 60;
 
     let activeFamily = 'all';
     let searchQuery = '';
@@ -874,7 +904,7 @@ def build_html():
 
     countAll.textContent = allShades.length;
 
-    // Precalculate RGBs for all shades once to eliminate runtime calculations
+    // Precalculate RGBs for all shades once
     allShades.forEach(s => {
         let c = (s.hex || '#ffffff').replace('#', '');
         if (c.length === 3) c = c.split('').map(x => x + x).join('');
@@ -920,7 +950,6 @@ def build_html():
         applyFilter();
     };
 
-    // Debounced search for instant lag-free typing on phone
     let searchDebounceTimer;
     searchInput.addEventListener('input', (e) => {
         clearTimeout(searchDebounceTimer);
@@ -1061,7 +1090,7 @@ def build_html():
         modalCode.textContent = shade.code || '—';
         modalName.textContent = shade.name || '—';
         modalHex.textContent = hex.toUpperCase();
-        modalRgb.textContent = `RGB(${shade._r}, ${shade._g}, ${shade._b})`;
+        modalRgb.textContent = `RGB: ${shade._r}, ${shade._g}, ${shade._b}`;
         modalFamily.textContent = shade.family ? (shade.family.charAt(0).toUpperCase() + shade.family.slice(1)) : 'Wall Shade';
 
         updateModalPinState();
@@ -1189,7 +1218,6 @@ def build_html():
             const familyName = s.family ? (s.family.charAt(0).toUpperCase() + s.family.slice(1)) : 'Wall Shade';
             const famBaseHex = getFamilyColor(fam);
             
-            // Fast rgb parsing from precalculated values
             const badgeBg = `rgba(${s._r}, ${s._g}, ${s._b}, 0.35)`;
             const badgeBorder = `rgba(${s._r}, ${s._g}, ${s._b}, 0.65)`;
             const dotColor = famBaseHex.startsWith('#') ? famBaseHex : '#38bdf8';
@@ -1210,9 +1238,15 @@ def build_html():
                             <span class="compare-family-dot" style="background: ${dotColor};"></span>
                             <span>${familyName}</span>
                         </div>
-                        <div class="compare-col-meta">
-                            <span class="compare-col-hex" onclick="copyText('${hex}', 'HEX')">${hex.toUpperCase()}</span>
-                            <span class="compare-col-rgb">RGB(${s._r}, ${s._g}, ${s._b})</span>
+                        <div class="compare-col-specs">
+                            <div class="spec-item" onclick="copyText('${hex}', 'HEX')" title="Click to copy HEX">
+                                <span class="spec-label">HEX</span>
+                                <span class="spec-val" style="color: var(--accent);">${hex.toUpperCase()}</span>
+                            </div>
+                            <div class="spec-item" onclick="copyText('rgb(${s._r}, ${s._g}, ${s._b})', 'RGB')" title="Click to copy RGB">
+                                <span class="spec-label">RGB</span>
+                                <span class="spec-val">${s._r}, ${s._g}, ${s._b}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1268,7 +1302,6 @@ def build_html():
         sentinel.textContent = `Loaded ${renderedCount} of ${filteredShades.length}...`;
     }
 
-    // High performance IntersectionObserver for seamless infinite scrolling
     const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
             renderMoreCards();
@@ -1288,7 +1321,6 @@ def build_html():
 
         stats.textContent = `Showing ${filteredShades.length.toLocaleString()} of ${allShades.length.toLocaleString()} shades (Tap card for fullscreen view)`;
 
-        // Reset and render first lightweight chunk instantly
         grid.innerHTML = '';
         renderedCount = 0;
         window.scrollTo({ top: 0, behavior: 'instant' });
