@@ -44,6 +44,9 @@ def build_html():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0f19">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Asian Paints Complete Shade Catalogue & Comparison Tool</title>
     <style>
         :root {
@@ -65,24 +68,29 @@ def build_html():
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-        html {
-            overflow-x: hidden;
-        }
-        body {
+        html, body {
             background: var(--bg);
             color: var(--text);
-            padding-bottom: 70px;
             min-height: 100vh;
             min-height: 100dvh;
             text-rendering: optimizeLegibility;
             overflow-x: hidden;
         }
-        /* Mobile Scroll Lock when Modal is open */
-        body.modal-open {
-            overflow: hidden !important;
-            height: 100vh !important;
-            height: 100dvh !important;
-            touch-action: none !important;
+
+        /* Views */
+        .app-view {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+        .app-view.active-view {
+            display: block;
+        }
+
+        /* ---------------- CATALOGUE VIEW ---------------- */
+        #view-catalogue {
+            padding-bottom: 80px;
         }
         header {
             position: sticky;
@@ -91,7 +99,7 @@ def build_html():
             background: rgba(11, 15, 25, 0.96);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
-            padding: 12px 16px;
+            padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px 16px;
         }
         .header-content {
             max-width: 1400px;
@@ -127,7 +135,7 @@ def build_html():
             background: var(--surface-card);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 7px 14px;
+            padding: 8px 14px;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -348,6 +356,254 @@ def build_html():
             margin-top: 20px;
         }
 
+        /* ---------------- DEDICATED COMPARISON VIEW (FULL SCREEN SPA PAGE) ---------------- */
+        #view-compare.active-view {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: var(--bg);
+        }
+        .compare-page-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #0b0f19;
+            border-bottom: 1px solid var(--border);
+            padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .compare-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        .back-btn:hover {
+            border-color: var(--accent);
+            background: var(--surface-hover);
+        }
+        .compare-header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .compare-content-container {
+            flex: 1;
+            display: flex;
+            width: 100%;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        /* Desktop: Horizontal Columns */
+        .compare-content-container.layout-horizontal {
+            flex-direction: row;
+            height: calc(100vh - 75px);
+            height: calc(100dvh - 75px);
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+        .compare-content-container.layout-horizontal .compare-col {
+            flex: 1;
+            min-width: 165px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 18px;
+            position: relative;
+            border-right: 1px solid rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+        }
+        .compare-content-container.layout-horizontal .compare-col-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Mobile & Vertical: Full-Width Stacked Bands */
+        .compare-content-container.layout-vertical {
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: calc(100vh - 75px);
+            min-height: calc(100dvh - 75px);
+        }
+        .compare-content-container.layout-vertical .compare-col {
+            flex: 1;
+            min-height: 150px;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            position: relative;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+        .compare-content-container.layout-vertical .compare-col-details {
+            min-width: 200px;
+            max-width: 72%;
+        }
+        .compare-content-container.layout-vertical .compare-col-top {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .order-btn-group {
+            display: flex;
+            gap: 4px;
+        }
+        .order-btn {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: all 0.15s;
+        }
+        .order-btn:hover:not(:disabled) {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: var(--accent);
+        }
+        .order-btn:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+        .col-remove-btn {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            transition: all 0.15s;
+        }
+        .col-remove-btn:hover {
+            background: rgba(239, 68, 68, 0.9);
+        }
+        .compare-col-details {
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 12px 14px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .compare-col-code {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            line-height: 1.1;
+        }
+        .compare-col-name {
+            font-size: 0.92rem;
+            font-weight: 600;
+            opacity: 0.95;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .compare-col-family {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 3px 8px 3px 6px;
+            border-radius: 999px;
+            width: fit-content;
+            backdrop-filter: blur(6px);
+            white-space: nowrap;
+        }
+        .compare-family-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 5px currentColor;
+        }
+        .compare-col-specs {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-top: 2px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: ui-monospace, monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .spec-item:hover {
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--accent);
+        }
+        .spec-label {
+            color: var(--text-muted);
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .spec-val {
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
         /* Fullscreen Single Shade Modal */
         .modal {
             position: fixed;
@@ -358,16 +614,14 @@ def build_html():
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            z-index: 500;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 24px;
+            padding: calc(20px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px)) 24px;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease;
-            overscroll-behavior: contain;
-            touch-action: pan-y;
         }
         .modal.active {
             opacity: 1;
@@ -491,250 +745,13 @@ def build_html():
             transform: translateY(-2px);
         }
 
-        /* Fullscreen Comparison View */
-        .compare-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            z-index: 600;
-            background: var(--bg);
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-            overscroll-behavior: contain;
-            touch-action: pan-y;
-        }
-        .compare-modal.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .compare-header {
-            background: rgba(11, 15, 25, 0.96);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
-            padding: 10px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            z-index: 10;
-            flex-shrink: 0;
-        }
-        .compare-title {
-            font-size: 1rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .compare-columns {
-            flex: 1;
-            display: flex;
-            height: 100%;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
-            touch-action: pan-y;
-        }
-
-        /* Desktop Layout: Horizontal Columns */
-        .compare-columns.layout-horizontal {
-            flex-direction: row;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }
-        .compare-columns.layout-horizontal .compare-col {
-            flex: 1;
-            min-width: 160px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px 16px;
-            position: relative;
-            border-right: 1px solid rgba(0, 0, 0, 0.15);
-            flex-shrink: 0;
-        }
-        .compare-columns.layout-horizontal .compare-col-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Vertical Stacked Layout (Default for Mobile) */
-        .compare-columns.layout-vertical {
-            flex-direction: column;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-        .compare-columns.layout-vertical .compare-col {
-            flex: 1;
-            min-height: 135px;
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 18px;
-            position: relative;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.2);
-            flex-shrink: 0;
-        }
-        .compare-columns.layout-vertical .compare-col-details {
-            min-width: 200px;
-            max-width: 72%;
-        }
-        .compare-columns.layout-vertical .compare-col-top {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-        }
-
-        .order-btn-group {
-            display: flex;
-            gap: 4px;
-        }
-        .order-btn {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 700;
-            transition: all 0.15s;
-        }
-        .order-btn:hover:not(:disabled) {
-            background: rgba(0, 0, 0, 0.8);
-            border-color: var(--accent);
-        }
-        .order-btn:disabled {
-            opacity: 0.25;
-            cursor: not-allowed;
-        }
-        .col-remove-btn {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.95rem;
-            transition: all 0.15s;
-        }
-        .col-remove-btn:hover {
-            background: rgba(239, 68, 68, 0.9);
-        }
-        .compare-col-details {
-            background: rgba(0, 0, 0, 0.72);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 12px 14px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            color: #fff;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-        .compare-col-code {
-            font-size: 1.35rem;
-            font-weight: 800;
-            letter-spacing: 0.02em;
-            line-height: 1.1;
-        }
-        .compare-col-name {
-            font-size: 0.92rem;
-            font-weight: 600;
-            opacity: 0.95;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .compare-col-family {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            padding: 3px 8px 3px 6px;
-            border-radius: 999px;
-            width: fit-content;
-            backdrop-filter: blur(6px);
-            white-space: nowrap;
-        }
-        .compare-family-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            box-shadow: 0 0 5px currentColor;
-        }
-        
-        .compare-col-specs {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            margin-top: 2px;
-            padding-top: 6px;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        .spec-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: ui-monospace, monospace;
-            font-size: 0.75rem;
-            cursor: pointer;
-            padding: 2px 5px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.06);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .spec-item:hover {
-            background: rgba(56, 189, 248, 0.2);
-            color: var(--accent);
-        }
-        .spec-label {
-            color: var(--text-muted);
-            font-size: 0.68rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .spec-val {
-            font-weight: 700;
-            letter-spacing: 0.02em;
-        }
-
-        /* Sleek Floating Comparison Pill (Non-intrusive on mobile) */
+        /* Sleek Floating Comparison Pill */
         .floating-compare-pill {
             position: fixed;
-            bottom: 20px;
+            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
             left: 50%;
             transform: translateX(-50%) translateY(120px);
-            background: rgba(15, 23, 42, 0.92);
+            background: rgba(15, 23, 42, 0.94);
             backdrop-filter: blur(14px);
             border: 1px solid rgba(56, 189, 248, 0.35);
             padding: 8px 14px 8px 10px;
@@ -788,7 +805,7 @@ def build_html():
 
         .toast {
             position: fixed;
-            top: 24px;
+            top: calc(24px + env(safe-area-inset-top, 0px));
             left: 50%;
             transform: translateX(-50%) translateY(-100px);
             background: var(--accent);
@@ -799,20 +816,20 @@ def build_html():
             font-size: 0.85rem;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 1000;
+            z-index: 20000;
         }
         .toast.show {
             transform: translateX(-50%) translateY(0);
         }
 
         @media (max-width: 768px) {
-            .compare-columns.layout-vertical .compare-col {
-                min-height: 120px;
-                padding: 12px 14px;
+            .compare-content-container.layout-vertical .compare-col {
+                min-height: 125px;
+                padding: 14px 16px;
             }
-            .compare-columns.layout-vertical .compare-col-details {
+            .compare-content-container.layout-vertical .compare-col-details {
                 min-width: 165px;
-                padding: 8px 10px;
+                padding: 10px 12px;
             }
             .compare-col-code {
                 font-size: 1.15rem;
@@ -825,44 +842,78 @@ def build_html():
 </head>
 <body>
 
-<header>
-    <div class="header-content">
-        <div class="top-bar">
-            <div class="brand-title">
-                🎨 Asian Paints Complete Catalogue
-                <span class="brand-badge">2,200+ Shades</span>
+<!-- ================= 1. CATALOGUE VIEW ================= -->
+<div class="app-view active-view" id="view-catalogue">
+    <header>
+        <div class="header-content">
+            <div class="top-bar">
+                <div class="brand-title">
+                    🎨 Asian Paints Complete Catalogue
+                    <span class="brand-badge">2,200+ Shades</span>
+                </div>
+                <div class="action-btns">
+                    <button class="btn btn-primary" id="open-compare-btn" onclick="openCompareScreen()">
+                        ⚖️ Compare View (<span id="compare-count-top">0</span>)
+                    </button>
+                </div>
             </div>
-            <div class="action-btns">
-                <button class="btn btn-primary" id="open-compare-btn" onclick="openCompareModal()">
-                    ⚖️ Compare View (<span id="compare-count-top">0</span>)
-                </button>
+
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search" class="search-input" placeholder="Search by shade code (e.g. 8499, 0N68, L101) or name (e.g. Eclipse)...">
             </div>
-        </div>
 
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="search" class="search-input" placeholder="Search by shade code (e.g. 8499, 0N68, L101) or name (e.g. Eclipse)...">
-        </div>
-
-        <div class="filter-strip-wrapper">
-            <div class="filter-strip" id="filter-strip">
-                <div class="color-chip active" data-family="all">
-                    <div class="color-bubble" style="background: conic-gradient(from 180deg, #ef4444, #f59e0b, #10b981, #06b6d4, #3b82f6, #8b5cf6, #ec4899, #ef4444);"></div>
-                    <span>All Colours</span>
-                    <span class="chip-count" id="count-all">0</span>
+            <div class="filter-strip-wrapper">
+                <div class="filter-strip" id="filter-strip">
+                    <div class="color-chip active" data-family="all">
+                        <div class="color-bubble" style="background: conic-gradient(from 180deg, #ef4444, #f59e0b, #10b981, #06b6d4, #3b82f6, #8b5cf6, #ec4899, #ef4444);"></div>
+                        <span>All Colours</span>
+                        <span class="chip-count" id="count-all">0</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<main>
-    <div style="margin-bottom: 12px; font-size: 0.85rem; color: var(--text-muted);" id="stats">
-        Showing shades...
+    <main>
+        <div style="margin-bottom: 12px; font-size: 0.85rem; color: var(--text-muted);" id="stats">
+            Showing shades...
+        </div>
+        <div class="grid" id="grid"></div>
+        <div id="scroll-sentinel"></div>
+    </main>
+
+    <!-- Floating Compare Button on Catalogue -->
+    <div class="floating-compare-pill" id="floating-pill" onclick="openCompareScreen()">
+        <div class="pill-swatches-row" id="pill-swatches"></div>
+        <div class="pill-label">
+            <span>Compare</span>
+            <span class="pill-action-tag" id="pill-count">0</span>
+        </div>
     </div>
-    <div class="grid" id="grid"></div>
-    <div id="scroll-sentinel"></div>
-</main>
+</div>
+
+<!-- ================= 2. DEDICATED FULL-SCREEN COMPARISON VIEW ================= -->
+<div class="app-view" id="view-compare">
+    <div class="compare-page-header">
+        <div class="compare-header-left">
+            <button class="back-btn" onclick="openCatalogueScreen()">
+                ← Browse Shades
+            </button>
+            <div style="font-size: 1rem; font-weight: 700;">
+                ⚖️ Comparison (<span id="compare-page-count">0</span>)
+            </div>
+            <button class="btn" id="layout-toggle-btn" onclick="toggleCompareLayout()" style="padding: 5px 10px; font-size: 0.8rem;">
+                📱 Stack: Vertical
+            </button>
+        </div>
+        <div class="compare-header-actions">
+            <button class="btn btn-primary" onclick="shareComparisonLink()">🔗 Share Link</button>
+            <button class="btn" onclick="clearPalette()">Clear All</button>
+        </div>
+    </div>
+    <div class="compare-content-container layout-vertical" id="compare-container"></div>
+</div>
 
 <!-- Fullscreen Single Shade Modal -->
 <div class="modal" id="modal">
@@ -898,33 +949,6 @@ def build_html():
     </div>
 </div>
 
-<!-- Fullscreen Comparison Modal with Vertical/Horizontal Stack Toggle & Sharing -->
-<div class="compare-modal" id="compare-modal">
-    <div class="compare-header">
-        <div class="compare-title">
-            ⚖️ Comparison (<span id="compare-modal-count">0</span> shades)
-            <button class="btn" id="layout-toggle-btn" onclick="toggleCompareLayout()" style="padding: 4px 10px; font-size: 0.78rem;">
-                📱 Stack: Vertical
-            </button>
-        </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-primary" onclick="shareComparisonLink()">🔗 Share Link</button>
-            <button class="btn" onclick="clearPalette()">Clear All</button>
-            <button class="btn" onclick="closeCompareModal()">Close ✕</button>
-        </div>
-    </div>
-    <div class="compare-columns layout-vertical" id="compare-columns"></div>
-</div>
-
-<!-- Non-intrusive Floating Comparison Pill on Mobile/Desktop -->
-<div class="floating-compare-pill" id="floating-pill" onclick="openCompareModal()">
-    <div class="pill-swatches-row" id="pill-swatches"></div>
-    <div class="pill-label">
-        <span>Compare</span>
-        <span class="pill-action-tag" id="pill-count">0</span>
-    </div>
-</div>
-
 <div class="toast" id="toast">Copied to clipboard!</div>
 
 <script>
@@ -940,10 +964,12 @@ def build_html():
     let currentShadeIndex = 0;
     let filteredShades = [...allShades];
     let renderedCount = 0;
+    let activeView = 'catalogue';
     
-    // Auto default to vertical stack on mobile (<=768px), horizontal on desktop
     let compareLayout = window.innerWidth <= 768 ? 'vertical' : 'horizontal';
 
+    const viewCatalogue = document.getElementById('view-catalogue');
+    const viewCompare = document.getElementById('view-compare');
     const grid = document.getElementById('grid');
     const searchInput = document.getElementById('search');
     const filterStrip = document.getElementById('filter-strip');
@@ -956,6 +982,8 @@ def build_html():
     const countAll = document.getElementById('count-all');
     const sentinel = document.getElementById('scroll-sentinel');
     const layoutToggleBtn = document.getElementById('layout-toggle-btn');
+    const compareContainer = document.getElementById('compare-container');
+    const comparePageCount = document.getElementById('compare-page-count');
 
     // Modal elements
     const modal = document.getElementById('modal');
@@ -966,14 +994,9 @@ def build_html():
     const modalFamily = document.getElementById('modal-family');
     const modalPinBtn = document.getElementById('modal-pin-btn');
 
-    // Compare Modal
-    const compareModal = document.getElementById('compare-modal');
-    const compareColumns = document.getElementById('compare-columns');
-    const compareModalCount = document.getElementById('compare-modal-count');
-
     countAll.textContent = allShades.length;
 
-    // Precalculate RGBs for all shades once
+    // Precalculate RGBs for all shades
     allShades.forEach(s => {
         let c = (s.hex || '#ffffff').replace('#', '');
         if (c.length === 3) c = c.split('').map(x => x + x).join('');
@@ -1044,6 +1067,29 @@ def build_html():
         setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
+    /* Screen Navigation (SPA) */
+    function openCompareScreen() {
+        if (pinnedShades.length === 0) {
+            showToast('Pin at least 2 shades to compare!');
+            return;
+        }
+        activeView = 'compare';
+        viewCatalogue.classList.remove('active-view');
+        viewCompare.classList.add('active-view');
+        window.scrollTo(0, 0);
+        renderCompareScreen();
+    }
+
+    function openCatalogueScreen() {
+        activeView = 'catalogue';
+        viewCompare.classList.remove('active-view');
+        viewCatalogue.classList.add('active-view');
+    }
+
+    window.addEventListener('popstate', () => {
+        restoreState();
+    });
+
     function saveState() {
         const codes = pinnedShades.map(s => s.code);
         try {
@@ -1065,11 +1111,11 @@ def build_html():
         const shadeParam = urlParams.get('shade') || urlParams.get('s');
 
         let codesToLoad = [];
-        let openModalFromUrl = false;
+        let openCompareFromUrl = false;
 
         if (compareParam) {
             codesToLoad = compareParam.split(',').map(c => c.trim().toLowerCase());
-            openModalFromUrl = true;
+            openCompareFromUrl = true;
         } else {
             try {
                 const stored = localStorage.getItem(STORAGE_KEY);
@@ -1087,8 +1133,8 @@ def build_html():
                 }
             });
             renderFloatingPill();
-            if (openModalFromUrl && pinnedShades.length > 0) {
-                openCompareModal();
+            if (openCompareFromUrl && pinnedShades.length > 0) {
+                openCompareScreen();
             }
         }
 
@@ -1163,15 +1209,11 @@ def build_html():
         modalFamily.textContent = shade.family ? (shade.family.charAt(0).toUpperCase() + shade.family.slice(1)) : 'Wall Shade';
 
         updateModalPinState();
-        document.body.classList.add('modal-open');
         modal.classList.add('active');
     }
 
     function closeModal() {
         modal.classList.remove('active');
-        if (!compareModal.classList.contains('active')) {
-            document.body.classList.remove('modal-open');
-        }
     }
 
     function nextShade() {
@@ -1237,7 +1279,7 @@ def build_html():
         pinnedShades.splice(newIndex, 0, item);
         saveState();
         renderFloatingPill();
-        renderCompareColumns();
+        renderCompareScreen();
     }
 
     function clearPalette() {
@@ -1245,7 +1287,7 @@ def build_html():
         saveState();
         renderFloatingPill();
         updateCardPinStyles();
-        renderCompareColumns();
+        renderCompareScreen();
     }
 
     function renderFloatingPill() {
@@ -1266,41 +1308,25 @@ def build_html():
 
     function toggleCompareLayout() {
         compareLayout = compareLayout === 'vertical' ? 'horizontal' : 'vertical';
-        renderCompareColumns();
+        renderCompareScreen();
     }
 
-    function openCompareModal() {
-        if (pinnedShades.length === 0) {
-            showToast('Pin at least 2 shades to compare!');
-            return;
-        }
-        renderCompareColumns();
-        document.body.classList.add('modal-open');
-        compareModal.classList.add('active');
-    }
-
-    function closeCompareModal() {
-        compareModal.classList.remove('active');
-        if (!modal.classList.contains('active')) {
-            document.body.classList.remove('modal-open');
-        }
-    }
-
-    function renderCompareColumns() {
-        compareModalCount.textContent = pinnedShades.length;
-        if (pinnedShades.length === 0) {
-            closeCompareModal();
+    function renderCompareScreen() {
+        const count = pinnedShades.length;
+        comparePageCount.textContent = count;
+        if (count === 0) {
+            openCatalogueScreen();
             return;
         }
 
         const isVert = compareLayout === 'vertical';
-        compareColumns.className = `compare-columns layout-${compareLayout}`;
+        compareContainer.className = `compare-content-container layout-${compareLayout}`;
         layoutToggleBtn.textContent = isVert ? '📱 Stack: Vertical' : '💻 Columns: Side-by-Side';
 
         const prevIcon = isVert ? '↑' : '←';
         const nextIcon = isVert ? '↓' : '→';
 
-        compareColumns.innerHTML = pinnedShades.map((s, idx) => {
+        compareContainer.innerHTML = pinnedShades.map((s, idx) => {
             const hex = s.hex || '#475569';
             const isFirst = idx === 0;
             const isLast = idx === pinnedShades.length - 1;
@@ -1337,7 +1363,7 @@ def build_html():
                             <button class="order-btn" ${isFirst ? 'disabled' : ''} title="Move ${isVert ? 'Up' : 'Left'}" onclick="moveCompare(${idx}, -1)">${prevIcon}</button>
                             <button class="order-btn" ${isLast ? 'disabled' : ''} title="Move ${isVert ? 'Down' : 'Right'}" onclick="moveCompare(${idx}, 1)">${nextIcon}</button>
                         </div>
-                        <button class="col-remove-btn" title="Remove" onclick="togglePin(${JSON.stringify(s).replace(/"/g, '&quot;')}); renderCompareColumns();">✕</button>
+                        <button class="col-remove-btn" title="Remove" onclick="togglePin(${JSON.stringify(s).replace(/"/g, '&quot;')}); renderCompareScreen();">✕</button>
                     </div>
                 </div>
             `;
@@ -1422,9 +1448,8 @@ def build_html():
             if (e.key === 'Escape') closeModal();
             if (e.key === 'ArrowRight') nextShade();
             if (e.key === 'ArrowLeft') prevShade();
-        }
-        if (compareModal.classList.contains('active')) {
-            if (e.key === 'Escape') closeCompareModal();
+        } else if (activeView === 'compare') {
+            if (e.key === 'Escape') openCatalogueScreen();
         }
     });
 
