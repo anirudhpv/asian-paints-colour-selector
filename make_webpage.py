@@ -43,7 +43,7 @@ def build_html():
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Asian Paints Complete Shade Catalogue & Comparison Tool</title>
     <style>
         :root {
@@ -65,12 +65,24 @@ def build_html():
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
+        html {
+            overflow-x: hidden;
+        }
         body {
             background: var(--bg);
             color: var(--text);
             padding-bottom: 70px;
             min-height: 100vh;
+            min-height: 100dvh;
             text-rendering: optimizeLegibility;
+            overflow-x: hidden;
+        }
+        /* Mobile Scroll Lock when Modal is open */
+        body.modal-open {
+            overflow: hidden !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            touch-action: none !important;
         }
         header {
             position: sticky;
@@ -336,13 +348,16 @@ def build_html():
             margin-top: 20px;
         }
 
-        /* Fullscreen Shade Modal */
+        /* Fullscreen Single Shade Modal */
         .modal {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             z-index: 500;
             display: flex;
             flex-direction: column;
@@ -351,6 +366,8 @@ def build_html():
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
         }
         .modal.active {
             opacity: 1;
@@ -481,6 +498,9 @@ def build_html():
             left: 0;
             right: 0;
             bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             z-index: 600;
             background: var(--bg);
             display: flex;
@@ -488,6 +508,8 @@ def build_html():
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
         }
         .compare-modal.active {
             opacity: 1;
@@ -504,6 +526,7 @@ def build_html():
             flex-wrap: wrap;
             gap: 8px;
             z-index: 10;
+            flex-shrink: 0;
         }
         .compare-title {
             font-size: 1rem;
@@ -519,11 +542,15 @@ def build_html():
             height: 100%;
             overflow: auto;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
         }
 
         /* Desktop Layout: Horizontal Columns */
         .compare-columns.layout-horizontal {
             flex-direction: row;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
         .compare-columns.layout-horizontal .compare-col {
             flex: 1;
@@ -535,6 +562,7 @@ def build_html():
             padding: 20px 16px;
             position: relative;
             border-right: 1px solid rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
         }
         .compare-columns.layout-horizontal .compare-col-top {
             display: flex;
@@ -543,25 +571,28 @@ def build_html():
             gap: 6px;
         }
 
-        /* Vertical Stacked Layout (Default for Mobile & Option for All) */
+        /* Vertical Stacked Layout (Default for Mobile) */
         .compare-columns.layout-vertical {
             flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
         .compare-columns.layout-vertical .compare-col {
             flex: 1;
-            min-height: 140px;
+            min-height: 135px;
             width: 100%;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 20px;
+            padding: 14px 18px;
             position: relative;
             border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
         }
         .compare-columns.layout-vertical .compare-col-details {
-            min-width: 220px;
-            max-width: 70%;
+            min-width: 200px;
+            max-width: 72%;
         }
         .compare-columns.layout-vertical .compare-col-top {
             display: flex;
@@ -780,7 +811,7 @@ def build_html():
                 padding: 12px 14px;
             }
             .compare-columns.layout-vertical .compare-col-details {
-                min-width: 170px;
+                min-width: 165px;
                 padding: 8px 10px;
             }
             .compare-col-code {
@@ -910,7 +941,7 @@ def build_html():
     let filteredShades = [...allShades];
     let renderedCount = 0;
     
-    // Auto default to vertical stack on mobile (<768px), horizontal on desktop
+    // Auto default to vertical stack on mobile (<=768px), horizontal on desktop
     let compareLayout = window.innerWidth <= 768 ? 'vertical' : 'horizontal';
 
     const grid = document.getElementById('grid');
@@ -1132,11 +1163,15 @@ def build_html():
         modalFamily.textContent = shade.family ? (shade.family.charAt(0).toUpperCase() + shade.family.slice(1)) : 'Wall Shade';
 
         updateModalPinState();
+        document.body.classList.add('modal-open');
         modal.classList.add('active');
     }
 
     function closeModal() {
         modal.classList.remove('active');
+        if (!compareModal.classList.contains('active')) {
+            document.body.classList.remove('modal-open');
+        }
     }
 
     function nextShade() {
@@ -1240,11 +1275,15 @@ def build_html():
             return;
         }
         renderCompareColumns();
+        document.body.classList.add('modal-open');
         compareModal.classList.add('active');
     }
 
     function closeCompareModal() {
         compareModal.classList.remove('active');
+        if (!modal.classList.contains('active')) {
+            document.body.classList.remove('modal-open');
+        }
     }
 
     function renderCompareColumns() {
