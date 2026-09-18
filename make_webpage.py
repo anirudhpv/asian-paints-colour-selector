@@ -474,7 +474,7 @@ def build_html():
             transform: translateY(-2px);
         }
 
-        /* Fullscreen Comparison View (Optimized for Mobile & Desktop) */
+        /* Fullscreen Comparison View */
         .compare-modal {
             position: fixed;
             top: 0;
@@ -517,27 +517,59 @@ def build_html():
             flex: 1;
             display: flex;
             height: 100%;
-            overflow-x: auto;
+            overflow: auto;
             -webkit-overflow-scrolling: touch;
         }
-        .compare-col {
+
+        /* Desktop Layout: Horizontal Columns */
+        .compare-columns.layout-horizontal {
+            flex-direction: row;
+        }
+        .compare-columns.layout-horizontal .compare-col {
             flex: 1;
-            min-width: 140px;
+            min-width: 160px;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 16px 12px;
+            padding: 20px 16px;
             position: relative;
-            transition: background 0.15s;
             border-right: 1px solid rgba(0, 0, 0, 0.15);
         }
-        .compare-col-top {
+        .compare-columns.layout-horizontal .compare-col-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 6px;
         }
+
+        /* Vertical Stacked Layout (Default for Mobile & Option for All) */
+        .compare-columns.layout-vertical {
+            flex-direction: column;
+        }
+        .compare-columns.layout-vertical .compare-col {
+            flex: 1;
+            min-height: 140px;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            position: relative;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+        }
+        .compare-columns.layout-vertical .compare-col-details {
+            min-width: 220px;
+            max-width: 70%;
+        }
+        .compare-columns.layout-vertical .compare-col-top {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
         .order-btn-group {
             display: flex;
             gap: 4px;
@@ -547,10 +579,10 @@ def build_html():
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 700;
             transition: all 0.15s;
         }
@@ -567,8 +599,8 @@ def build_html():
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
@@ -581,10 +613,10 @@ def build_html():
             background: rgba(239, 68, 68, 0.9);
         }
         .compare-col-details {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.72);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 12px 10px;
+            padding: 12px 14px;
             border-radius: 12px;
             display: flex;
             flex-direction: column;
@@ -593,13 +625,13 @@ def build_html():
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
         .compare-col-code {
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             font-weight: 800;
             letter-spacing: 0.02em;
             line-height: 1.1;
         }
         .compare-col-name {
-            font-size: 0.88rem;
+            font-size: 0.92rem;
             font-weight: 600;
             opacity: 0.95;
             white-space: nowrap;
@@ -628,7 +660,6 @@ def build_html():
             box-shadow: 0 0 5px currentColor;
         }
         
-        /* Fully Responsive Clean Color Specs List (No Text Wrapping) */
         .compare-col-specs {
             display: flex;
             flex-direction: column;
@@ -644,9 +675,9 @@ def build_html():
             font-family: ui-monospace, monospace;
             font-size: 0.75rem;
             cursor: pointer;
-            padding: 2px 4px;
+            padding: 2px 5px;
             border-radius: 4px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -743,13 +774,14 @@ def build_html():
             transform: translateX(-50%) translateY(0);
         }
 
-        @media (max-width: 600px) {
-            .compare-col {
-                min-width: 125px;
-                padding: 12px 8px;
+        @media (max-width: 768px) {
+            .compare-columns.layout-vertical .compare-col {
+                min-height: 120px;
+                padding: 12px 14px;
             }
-            .compare-col-details {
-                padding: 10px 8px;
+            .compare-columns.layout-vertical .compare-col-details {
+                min-width: 170px;
+                padding: 8px 10px;
             }
             .compare-col-code {
                 font-size: 1.15rem;
@@ -835,20 +867,22 @@ def build_html():
     </div>
 </div>
 
-<!-- Fullscreen Side-by-Side Comparison Modal with Re-ordering & Sharing -->
+<!-- Fullscreen Comparison Modal with Vertical/Horizontal Stack Toggle & Sharing -->
 <div class="compare-modal" id="compare-modal">
     <div class="compare-header">
         <div class="compare-title">
-            ⚖️ Side-by-Side Comparison (<span id="compare-modal-count">0</span> shades)
-            <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted); margin-left: 8px;">(Use ← → to reorder)</span>
+            ⚖️ Comparison (<span id="compare-modal-count">0</span> shades)
+            <button class="btn" id="layout-toggle-btn" onclick="toggleCompareLayout()" style="padding: 4px 10px; font-size: 0.78rem;">
+                📱 Stack: Vertical
+            </button>
         </div>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-primary" onclick="shareComparisonLink()">🔗 Share Comparison Link</button>
+            <button class="btn btn-primary" onclick="shareComparisonLink()">🔗 Share Link</button>
             <button class="btn" onclick="clearPalette()">Clear All</button>
             <button class="btn" onclick="closeCompareModal()">Close ✕</button>
         </div>
     </div>
-    <div class="compare-columns" id="compare-columns"></div>
+    <div class="compare-columns layout-vertical" id="compare-columns"></div>
 </div>
 
 <!-- Non-intrusive Floating Comparison Pill on Mobile/Desktop -->
@@ -875,6 +909,9 @@ def build_html():
     let currentShadeIndex = 0;
     let filteredShades = [...allShades];
     let renderedCount = 0;
+    
+    // Auto default to vertical stack on mobile (<768px), horizontal on desktop
+    let compareLayout = window.innerWidth <= 768 ? 'vertical' : 'horizontal';
 
     const grid = document.getElementById('grid');
     const searchInput = document.getElementById('search');
@@ -887,6 +924,7 @@ def build_html():
     const toast = document.getElementById('toast');
     const countAll = document.getElementById('count-all');
     const sentinel = document.getElementById('scroll-sentinel');
+    const layoutToggleBtn = document.getElementById('layout-toggle-btn');
 
     // Modal elements
     const modal = document.getElementById('modal');
@@ -1191,6 +1229,11 @@ def build_html():
         }
     }
 
+    function toggleCompareLayout() {
+        compareLayout = compareLayout === 'vertical' ? 'horizontal' : 'vertical';
+        renderCompareColumns();
+    }
+
     function openCompareModal() {
         if (pinnedShades.length === 0) {
             showToast('Pin at least 2 shades to compare!');
@@ -1210,6 +1253,14 @@ def build_html():
             closeCompareModal();
             return;
         }
+
+        const isVert = compareLayout === 'vertical';
+        compareColumns.className = `compare-columns layout-${compareLayout}`;
+        layoutToggleBtn.textContent = isVert ? '📱 Stack: Vertical' : '💻 Columns: Side-by-Side';
+
+        const prevIcon = isVert ? '↑' : '←';
+        const nextIcon = isVert ? '↓' : '→';
+
         compareColumns.innerHTML = pinnedShades.map((s, idx) => {
             const hex = s.hex || '#475569';
             const isFirst = idx === 0;
@@ -1218,19 +1269,12 @@ def build_html():
             const familyName = s.family ? (s.family.charAt(0).toUpperCase() + s.family.slice(1)) : 'Wall Shade';
             const famBaseHex = getFamilyColor(fam);
             
-            const badgeBg = `rgba(${s._r}, ${s._g}, ${s._b}, 0.35)`;
-            const badgeBorder = `rgba(${s._r}, ${s._g}, ${s._b}, 0.65)`;
+            const badgeBg = `rgba(${s._r}, ${s._g}, ${s._b}, 0.38)`;
+            const badgeBorder = `rgba(${s._r}, ${s._g}, ${s._b}, 0.7)`;
             const dotColor = famBaseHex.startsWith('#') ? famBaseHex : '#38bdf8';
 
             return `
                 <div class="compare-col" style="background: ${hex};">
-                    <div class="compare-col-top">
-                        <div class="order-btn-group">
-                            <button class="order-btn" ${isFirst ? 'disabled' : ''} title="Move Left" onclick="moveCompare(${idx}, -1)">←</button>
-                            <button class="order-btn" ${isLast ? 'disabled' : ''} title="Move Right" onclick="moveCompare(${idx}, 1)">→</button>
-                        </div>
-                        <button class="col-remove-btn" title="Remove" onclick="togglePin(${JSON.stringify(s).replace(/"/g, '&quot;')}); renderCompareColumns();">✕</button>
-                    </div>
                     <div class="compare-col-details">
                         <div class="compare-col-code">${s.code || '—'}</div>
                         <div class="compare-col-name">${s.name || '—'}</div>
@@ -1248,6 +1292,13 @@ def build_html():
                                 <span class="spec-val">${s._r}, ${s._g}, ${s._b}</span>
                             </div>
                         </div>
+                    </div>
+                    <div class="compare-col-top">
+                        <div class="order-btn-group">
+                            <button class="order-btn" ${isFirst ? 'disabled' : ''} title="Move ${isVert ? 'Up' : 'Left'}" onclick="moveCompare(${idx}, -1)">${prevIcon}</button>
+                            <button class="order-btn" ${isLast ? 'disabled' : ''} title="Move ${isVert ? 'Down' : 'Right'}" onclick="moveCompare(${idx}, 1)">${nextIcon}</button>
+                        </div>
+                        <button class="col-remove-btn" title="Remove" onclick="togglePin(${JSON.stringify(s).replace(/"/g, '&quot;')}); renderCompareColumns();">✕</button>
                     </div>
                 </div>
             `;
