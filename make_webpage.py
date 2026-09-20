@@ -135,14 +135,14 @@ def build_html():
             background: var(--surface-card);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 8px 14px;
+            padding: 7px 12px;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             transition: all 0.15s;
         }
         .btn:hover {
@@ -382,7 +382,7 @@ def build_html():
         .compare-header-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         .back-btn {
@@ -419,7 +419,7 @@ def build_html():
             padding-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        /* Desktop / Columnar Mode: Horizontal Side-by-Side Columns */
+        /* Desktop: Horizontal Columns */
         .compare-content-container.layout-horizontal {
             flex-direction: row;
             height: calc(100vh - 65px);
@@ -447,37 +447,24 @@ def build_html():
             gap: 4px;
             width: 100%;
         }
-        /* In Columnar Mode: Stack the details neatly to prevent ANY horizontal overflow */
         .compare-content-container.layout-horizontal .compare-col-details {
             width: 100%;
             max-width: 100%;
             padding: 8px 10px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
         .compare-content-container.layout-horizontal .compare-title-row {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 2px;
+            align-items: center;
+            gap: 6px;
         }
         .compare-content-container.layout-horizontal .compare-col-name {
             max-width: 100%;
             font-size: 0.78rem;
         }
-        .compare-content-container.layout-horizontal .compare-inline-specs {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 3px;
-            margin-top: 2px;
-        }
-        .compare-content-container.layout-horizontal .spec-chip {
-            text-align: center;
-            font-size: 0.7rem;
-            padding: 2px 4px;
-        }
 
-        /* Mobile & Vertical: Full-Width Stacked Horizontal Bands */
+        /* Mobile & Vertical: Full-Width Stacked Bands */
         .compare-content-container.layout-vertical {
             flex-direction: column;
             overflow-y: auto;
@@ -487,25 +474,25 @@ def build_html():
         }
         .compare-content-container.layout-vertical .compare-col {
             flex: 1;
-            min-height: 95px;
+            min-height: 85px;
             width: 100%;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 14px;
+            padding: 8px 14px;
             position: relative;
             border-bottom: 2px solid rgba(0, 0, 0, 0.2);
             flex-shrink: 0;
         }
         .compare-content-container.layout-vertical .compare-col-details {
-            max-width: 75%;
+            max-width: 78%;
         }
         .compare-content-container.layout-vertical .compare-col-top {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 6px;
+            gap: 4px;
         }
 
         .order-btn-group {
@@ -520,7 +507,7 @@ def build_html():
             padding: 4px 8px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 700;
             transition: all 0.15s;
         }
@@ -537,115 +524,93 @@ def build_html():
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             transition: all 0.15s;
         }
         .col-remove-btn:hover {
             background: rgba(239, 68, 68, 0.9);
         }
 
-        /* Sleek, Non-Obtrusive Ultra-Compact Details Pill */
+        /* Minimalist Single-Line / Compact Details Badge */
         .compare-col-details {
-            background: rgba(11, 15, 25, 0.75);
+            background: rgba(11, 15, 25, 0.78);
             backdrop-filter: blur(14px);
             border: 1px solid rgba(255, 255, 255, 0.22);
-            padding: 6px 10px;
-            border-radius: 10px;
+            padding: 5px 9px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
             color: #fff;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
             width: fit-content;
         }
         .compare-title-row {
             display: flex;
-            align-items: baseline;
+            align-items: center;
             gap: 6px;
             flex-wrap: nowrap;
         }
+        .compare-family-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 6px currentColor;
+        }
         .compare-col-code {
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 800;
             letter-spacing: 0.02em;
             color: #fff;
         }
         .compare-col-name {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.92);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 150px;
-        }
-        .compare-col-family {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            padding: 1px 6px;
-            border-radius: 999px;
-            backdrop-filter: blur(4px);
-            white-space: nowrap;
-        }
-        .compare-family-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            flex-shrink: 0;
+            max-width: 160px;
         }
         
-        /* Inline specs chips */
-        .compare-inline-specs {
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .spec-chip-single {
             font-family: ui-monospace, monospace;
             font-size: 0.72rem;
-            white-space: nowrap;
-        }
-        .spec-chip {
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 1px 5px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 1px 6px;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.15s;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .spec-chip:hover {
-            background: rgba(56, 189, 248, 0.25);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        .spec-chip-hex {
+            width: fit-content;
             color: var(--accent);
             font-weight: 700;
+            margin-top: 1px;
+        }
+        .spec-chip-single:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--accent);
         }
 
-        /* Minimal Swatch Mode (Toggled) */
+        /* Minimal Swatch Mode */
         .compare-content-container.minimal-mode .compare-col-name,
-        .compare-content-container.minimal-mode .compare-inline-specs,
-        .compare-content-container.minimal-mode .compare-col-family {
+        .compare-content-container.minimal-mode .spec-chip-single {
             display: none !important;
         }
         .compare-content-container.minimal-mode .compare-col-details {
-            padding: 4px 8px;
+            padding: 3px 6px;
         }
         .compare-content-container.minimal-mode .compare-col-code {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         /* Fullscreen Single Shade Modal */
@@ -865,6 +830,23 @@ def build_html():
         .toast.show {
             transform: translateX(-50%) translateY(0);
         }
+
+        @media (max-width: 768px) {
+            .compare-content-container.layout-vertical .compare-col {
+                min-height: 80px;
+                padding: 6px 10px;
+            }
+            .compare-col-details {
+                padding: 4px 7px;
+            }
+            .compare-col-code {
+                font-size: 0.95rem;
+            }
+            .compare-col-name {
+                font-size: 0.75rem;
+                max-width: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -930,6 +912,9 @@ def build_html():
             <div style="font-size: 0.95rem; font-weight: 700;">
                 ⚖️ (<span id="compare-page-count">0</span>)
             </div>
+            <button class="btn" id="format-toggle-btn" onclick="toggleFormat()" style="padding: 4px 8px; font-size: 0.75rem;" title="Toggle between HEX and RGB">
+                HEX
+            </button>
             <button class="btn" id="layout-toggle-btn" onclick="toggleCompareLayout()" style="padding: 4px 8px; font-size: 0.75rem;">
                 📱 Stack
             </button>
@@ -996,6 +981,7 @@ def build_html():
     let renderedCount = 0;
     let activeView = 'catalogue';
     let isMinimalMode = false;
+    let colorFormat = 'hex'; // 'hex' or 'rgb'
     
     let compareLayout = window.innerWidth <= 768 ? 'vertical' : 'horizontal';
 
@@ -1013,6 +999,7 @@ def build_html():
     const countAll = document.getElementById('count-all');
     const sentinel = document.getElementById('scroll-sentinel');
     const layoutToggleBtn = document.getElementById('layout-toggle-btn');
+    const formatToggleBtn = document.getElementById('format-toggle-btn');
     const minimalToggleBtn = document.getElementById('minimal-toggle-btn');
     const compareContainer = document.getElementById('compare-container');
     const comparePageCount = document.getElementById('compare-page-count');
@@ -1343,9 +1330,15 @@ def build_html():
         renderCompareScreen();
     }
 
+    function toggleFormat() {
+        colorFormat = colorFormat === 'hex' ? 'rgb' : 'hex';
+        formatToggleBtn.textContent = colorFormat.toUpperCase();
+        renderCompareScreen();
+    }
+
     function toggleMinimalMode() {
         isMinimalMode = !isMinimalMode;
-        minimalToggleBtn.textContent = isMinimalMode ? '🏷️ Show Details' : '👁️ Full Swatch';
+        minimalToggleBtn.textContent = isMinimalMode ? '🏷️ Details' : '👁️ Full Swatch';
         if (isMinimalMode) {
             compareContainer.classList.add('minimal-mode');
         } else {
@@ -1364,6 +1357,7 @@ def build_html():
         const isVert = compareLayout === 'vertical';
         compareContainer.className = `compare-content-container layout-${compareLayout} ${isMinimalMode ? 'minimal-mode' : ''}`;
         layoutToggleBtn.textContent = isVert ? '📱 Stack' : '💻 Columns';
+        formatToggleBtn.textContent = colorFormat.toUpperCase();
 
         const prevIcon = isVert ? '↑' : '←';
         const nextIcon = isVert ? '↓' : '→';
@@ -1375,42 +1369,32 @@ def build_html():
             const fam = (s.family || 'other').toLowerCase();
             const familyName = s.family ? (s.family.charAt(0).toUpperCase() + s.family.slice(1)) : 'Wall';
             const famBaseHex = getFamilyColor(fam);
-            
-            const badgeBg = `rgba(${s._r}, ${s._g}, ${s._b}, 0.38)`;
-            const badgeBorder = `rgba(${s._r}, ${s._g}, ${s._b}, 0.75)`;
             const dotColor = famBaseHex.startsWith('#') ? famBaseHex : '#38bdf8';
+
+            const valText = colorFormat === 'hex' ? hex.toUpperCase() : `${s._r}, ${s._g}, ${s._b}`;
+            const copyVal = colorFormat === 'hex' ? hex.toUpperCase() : `rgb(${s._r}, ${s._g}, ${s._b})`;
 
             return `
                 <div class="compare-col" style="background: ${hex};">
                     ${isVert ? `
-                        <!-- Vertical Stacked Mode: Clean 2-Line Inline Badge -->
+                        <!-- Vertical Stacked Mode: Sleek Line with Minimal Color Dot -->
                         <div class="compare-col-details">
                             <div class="compare-title-row">
+                                <span class="compare-family-dot" style="background: ${dotColor};" title="Tinting Family: ${familyName}"></span>
                                 <span class="compare-col-code">${s.code || '—'}</span>
                                 <span class="compare-col-name" title="${s.name || ''}">${s.name || '—'}</span>
-                                <span class="compare-col-family" style="background: ${badgeBg}; border: 1px solid ${badgeBorder};">
-                                    <span class="compare-family-dot" style="background: ${dotColor};"></span>
-                                    <span>${familyName}</span>
-                                </span>
-                            </div>
-                            <div class="compare-inline-specs">
-                                <span class="spec-chip spec-chip-hex" onclick="copyText('${hex}', 'HEX')" title="Copy HEX">${hex.toUpperCase()}</span>
-                                <span class="spec-chip" onclick="copyText('rgb(${s._r}, ${s._g}, ${s._b})', 'RGB')" title="Copy RGB">RGB ${s._r}, ${s._g}, ${s._b}</span>
+                                <span class="spec-chip-single" onclick="copyText('${copyVal}', '${colorFormat.toUpperCase()}')" title="Click to copy">${valText}</span>
                             </div>
                         </div>
                     ` : `
-                        <!-- Columnar Mode: Dedicated Vertical Stacked Card (No Horizontal Overflow) -->
+                        <!-- Columnar Mode: Compact Vertical Stack with Minimal Color Dot -->
                         <div class="compare-col-details">
-                            <div style="font-size: 1.1rem; font-weight: 800; line-height: 1.1;">${s.code || '—'}</div>
-                            <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.95; white-space: normal; line-height: 1.2;">${s.name || '—'}</div>
-                            <div class="compare-col-family" style="background: ${badgeBg}; border: 1px solid ${badgeBorder}; margin: 2px 0;">
-                                <span class="compare-family-dot" style="background: ${dotColor};"></span>
-                                <span>${familyName}</span>
+                            <div class="compare-title-row">
+                                <span class="compare-family-dot" style="background: ${dotColor};" title="Tinting Family: ${familyName}"></span>
+                                <span class="compare-col-code">${s.code || '—'}</span>
                             </div>
-                            <div class="compare-inline-specs">
-                                <span class="spec-chip spec-chip-hex" onclick="copyText('${hex}', 'HEX')" title="Copy HEX" style="width: 100%; display: block; text-align: center;">${hex.toUpperCase()}</span>
-                                <span class="spec-chip" onclick="copyText('rgb(${s._r}, ${s._g}, ${s._b})', 'RGB')" title="Copy RGB" style="width: 100%; display: block; text-align: center;">RGB ${s._r}, ${s._g}, ${s._b}</span>
-                            </div>
+                            <div class="compare-col-name" style="max-width: 100%; white-space: normal; line-height: 1.2;">${s.name || '—'}</div>
+                            <span class="spec-chip-single" onclick="copyText('${copyVal}', '${colorFormat.toUpperCase()}')" title="Click to copy" style="width: 100%; text-align: center;">${valText}</span>
                         </div>
                     `}
                     <div class="compare-col-top">
