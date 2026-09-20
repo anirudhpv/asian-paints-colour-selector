@@ -356,7 +356,7 @@ def build_html():
             margin-top: 20px;
         }
 
-        /* ---------------- DEDICATED COMPARISON VIEW (FULL SCREEN SPA PAGE) ---------------- */
+        /* ---------------- DEDICATED COMPARISON VIEW ---------------- */
         #view-compare.active-view {
             display: flex;
             flex-direction: column;
@@ -370,33 +370,33 @@ def build_html():
             z-index: 100;
             background: #0b0f19;
             border-bottom: 1px solid var(--border);
-            padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px 16px;
+            padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             flex-shrink: 0;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
         .compare-header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .back-btn {
             background: var(--surface-card);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             transition: all 0.15s;
         }
         .back-btn:hover {
@@ -405,7 +405,7 @@ def build_html():
         }
         .compare-header-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
             flex-wrap: wrap;
         }
@@ -422,19 +422,19 @@ def build_html():
         /* Desktop: Horizontal Columns */
         .compare-content-container.layout-horizontal {
             flex-direction: row;
-            height: calc(100vh - 75px);
-            height: calc(100dvh - 75px);
+            height: calc(100vh - 65px);
+            height: calc(100dvh - 65px);
             overflow-x: auto;
             overflow-y: hidden;
         }
         .compare-content-container.layout-horizontal .compare-col {
             flex: 1;
-            min-width: 165px;
+            min-width: 150px;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 24px 18px;
+            padding: 16px 12px;
             position: relative;
             border-right: 1px solid rgba(0, 0, 0, 0.15);
             flex-shrink: 0;
@@ -451,157 +451,169 @@ def build_html():
             flex-direction: column;
             overflow-y: auto;
             overflow-x: hidden;
-            min-height: calc(100vh - 75px);
-            min-height: calc(100dvh - 75px);
+            min-height: calc(100vh - 65px);
+            min-height: calc(100dvh - 65px);
         }
         .compare-content-container.layout-vertical .compare-col {
             flex: 1;
-            min-height: 150px;
+            min-height: 110px;
             width: 100%;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 20px;
+            padding: 10px 14px;
             position: relative;
             border-bottom: 2px solid rgba(0, 0, 0, 0.2);
             flex-shrink: 0;
         }
         .compare-content-container.layout-vertical .compare-col-details {
-            min-width: 200px;
-            max-width: 72%;
+            max-width: 75%;
         }
         .compare-content-container.layout-vertical .compare-col-top {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 8px;
+            gap: 6px;
         }
 
         .order-btn-group {
             display: flex;
-            gap: 4px;
+            gap: 3px;
         }
         .order-btn {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            padding: 6px 12px;
+            padding: 4px 9px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             font-weight: 700;
             transition: all 0.15s;
         }
         .order-btn:hover:not(:disabled) {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             border-color: var(--accent);
         }
         .order-btn:disabled {
-            opacity: 0.25;
+            opacity: 0.2;
             cursor: not-allowed;
         }
         .col-remove-btn {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             transition: all 0.15s;
         }
         .col-remove-btn:hover {
             background: rgba(239, 68, 68, 0.9);
         }
+
+        /* Sleek, Non-Obtrusive Ultra-Compact Details Pill */
         .compare-col-details {
-            background: rgba(0, 0, 0, 0.72);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 12px 14px;
-            border-radius: 12px;
+            background: rgba(11, 15, 25, 0.72);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            padding: 6px 10px;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 3px;
             color: #fff;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            width: fit-content;
+        }
+        .compare-title-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
         }
         .compare-col-code {
-            font-size: 1.35rem;
+            font-size: 1.05rem;
             font-weight: 800;
             letter-spacing: 0.02em;
-            line-height: 1.1;
+            color: #fff;
         }
         .compare-col-name {
-            font-size: 0.92rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            opacity: 0.95;
+            color: rgba(255, 255, 255, 0.9);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            max-width: 150px;
         }
         .compare-col-family {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            font-size: 0.72rem;
+            gap: 4px;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            padding: 3px 8px 3px 6px;
+            padding: 1px 6px;
             border-radius: 999px;
-            width: fit-content;
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(4px);
             white-space: nowrap;
         }
         .compare-family-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             flex-shrink: 0;
-            box-shadow: 0 0 5px currentColor;
         }
-        .compare-col-specs {
+        
+        /* Ultra-compact inline specs chips */
+        .compare-inline-specs {
             display: flex;
-            flex-direction: column;
-            gap: 3px;
-            margin-top: 2px;
-            padding-top: 6px;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        .spec-item {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 6px;
             font-family: ui-monospace, monospace;
-            font-size: 0.75rem;
-            cursor: pointer;
-            padding: 2px 5px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.06);
+            font-size: 0.72rem;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
-        .spec-item:hover {
-            background: rgba(56, 189, 248, 0.2);
+        .spec-chip {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 1px 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .spec-chip:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--accent);
             color: var(--accent);
         }
-        .spec-label {
-            color: var(--text-muted);
-            font-size: 0.68rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .spec-val {
+        .spec-chip-hex {
+            color: var(--accent);
             font-weight: 700;
-            letter-spacing: 0.02em;
+        }
+
+        /* Minimal Swatch Mode (Toggled) */
+        .compare-content-container.minimal-mode .compare-col-name,
+        .compare-content-container.minimal-mode .compare-inline-specs,
+        .compare-content-container.minimal-mode .compare-col-family {
+            display: none !important;
+        }
+        .compare-content-container.minimal-mode .compare-col-details {
+            padding: 4px 8px;
+        }
+        .compare-content-container.minimal-mode .compare-col-code {
+            font-size: 0.95rem;
         }
 
         /* Fullscreen Single Shade Modal */
@@ -824,18 +836,22 @@ def build_html():
 
         @media (max-width: 768px) {
             .compare-content-container.layout-vertical .compare-col {
-                min-height: 125px;
-                padding: 14px 16px;
+                min-height: 90px;
+                padding: 8px 10px;
             }
-            .compare-content-container.layout-vertical .compare-col-details {
-                min-width: 165px;
-                padding: 10px 12px;
+            .compare-col-details {
+                padding: 5px 8px;
             }
             .compare-col-code {
-                font-size: 1.15rem;
+                font-size: 0.95rem;
             }
             .compare-col-name {
-                font-size: 0.82rem;
+                font-size: 0.75rem;
+                max-width: 100px;
+            }
+            .compare-inline-specs {
+                font-size: 0.65rem;
+                gap: 4px;
             }
         }
     </style>
@@ -898,18 +914,21 @@ def build_html():
     <div class="compare-page-header">
         <div class="compare-header-left">
             <button class="back-btn" onclick="openCatalogueScreen()">
-                ← Browse Shades
+                ← Browse
             </button>
-            <div style="font-size: 1rem; font-weight: 700;">
-                ⚖️ Comparison (<span id="compare-page-count">0</span>)
+            <div style="font-size: 0.95rem; font-weight: 700;">
+                ⚖️ (<span id="compare-page-count">0</span>)
             </div>
-            <button class="btn" id="layout-toggle-btn" onclick="toggleCompareLayout()" style="padding: 5px 10px; font-size: 0.8rem;">
-                📱 Stack: Vertical
+            <button class="btn" id="layout-toggle-btn" onclick="toggleCompareLayout()" style="padding: 4px 8px; font-size: 0.75rem;">
+                📱 Stack
+            </button>
+            <button class="btn" id="minimal-toggle-btn" onclick="toggleMinimalMode()" style="padding: 4px 8px; font-size: 0.75rem;" title="Toggle compact/pure swatch view">
+                👁️ Full Swatch
             </button>
         </div>
         <div class="compare-header-actions">
-            <button class="btn btn-primary" onclick="shareComparisonLink()">🔗 Share Link</button>
-            <button class="btn" onclick="clearPalette()">Clear All</button>
+            <button class="btn btn-primary" onclick="shareComparisonLink()" style="padding: 5px 10px; font-size: 0.78rem;">🔗 Share</button>
+            <button class="btn" onclick="clearPalette()" style="padding: 5px 10px; font-size: 0.78rem;">Clear</button>
         </div>
     </div>
     <div class="compare-content-container layout-vertical" id="compare-container"></div>
@@ -965,6 +984,7 @@ def build_html():
     let filteredShades = [...allShades];
     let renderedCount = 0;
     let activeView = 'catalogue';
+    let isMinimalMode = false;
     
     let compareLayout = window.innerWidth <= 768 ? 'vertical' : 'horizontal';
 
@@ -982,6 +1002,7 @@ def build_html():
     const countAll = document.getElementById('count-all');
     const sentinel = document.getElementById('scroll-sentinel');
     const layoutToggleBtn = document.getElementById('layout-toggle-btn');
+    const minimalToggleBtn = document.getElementById('minimal-toggle-btn');
     const compareContainer = document.getElementById('compare-container');
     const comparePageCount = document.getElementById('compare-page-count');
 
@@ -1311,6 +1332,16 @@ def build_html():
         renderCompareScreen();
     }
 
+    function toggleMinimalMode() {
+        isMinimalMode = !isMinimalMode;
+        minimalToggleBtn.textContent = isMinimalMode ? '🏷️ Show Details' : '👁️ Full Swatch';
+        if (isMinimalMode) {
+            compareContainer.classList.add('minimal-mode');
+        } else {
+            compareContainer.classList.remove('minimal-mode');
+        }
+    }
+
     function renderCompareScreen() {
         const count = pinnedShades.length;
         comparePageCount.textContent = count;
@@ -1320,8 +1351,8 @@ def build_html():
         }
 
         const isVert = compareLayout === 'vertical';
-        compareContainer.className = `compare-content-container layout-${compareLayout}`;
-        layoutToggleBtn.textContent = isVert ? '📱 Stack: Vertical' : '💻 Columns: Side-by-Side';
+        compareContainer.className = `compare-content-container layout-${compareLayout} ${isMinimalMode ? 'minimal-mode' : ''}`;
+        layoutToggleBtn.textContent = isVert ? '📱 Stack' : '💻 Columns';
 
         const prevIcon = isVert ? '↑' : '←';
         const nextIcon = isVert ? '↓' : '→';
@@ -1331,31 +1362,27 @@ def build_html():
             const isFirst = idx === 0;
             const isLast = idx === pinnedShades.length - 1;
             const fam = (s.family || 'other').toLowerCase();
-            const familyName = s.family ? (s.family.charAt(0).toUpperCase() + s.family.slice(1)) : 'Wall Shade';
+            const familyName = s.family ? (s.family.charAt(0).toUpperCase() + s.family.slice(1)) : 'Wall';
             const famBaseHex = getFamilyColor(fam);
             
             const badgeBg = `rgba(${s._r}, ${s._g}, ${s._b}, 0.38)`;
-            const badgeBorder = `rgba(${s._r}, ${s._g}, ${s._b}, 0.7)`;
+            const badgeBorder = `rgba(${s._r}, ${s._g}, ${s._b}, 0.75)`;
             const dotColor = famBaseHex.startsWith('#') ? famBaseHex : '#38bdf8';
 
             return `
                 <div class="compare-col" style="background: ${hex};">
                     <div class="compare-col-details">
-                        <div class="compare-col-code">${s.code || '—'}</div>
-                        <div class="compare-col-name">${s.name || '—'}</div>
-                        <div class="compare-col-family" style="background: ${badgeBg}; border: 1px solid ${badgeBorder}; color: #ffffff;">
-                            <span class="compare-family-dot" style="background: ${dotColor};"></span>
-                            <span>${familyName}</span>
+                        <div class="compare-title-row">
+                            <span class="compare-col-code">${s.code || '—'}</span>
+                            <span class="compare-col-name" title="${s.name || ''}">${s.name || '—'}</span>
+                            <span class="compare-col-family" style="background: ${badgeBg}; border: 1px solid ${badgeBorder};">
+                                <span class="compare-family-dot" style="background: ${dotColor};"></span>
+                                <span>${familyName}</span>
+                            </span>
                         </div>
-                        <div class="compare-col-specs">
-                            <div class="spec-item" onclick="copyText('${hex}', 'HEX')" title="Click to copy HEX">
-                                <span class="spec-label">HEX</span>
-                                <span class="spec-val" style="color: var(--accent);">${hex.toUpperCase()}</span>
-                            </div>
-                            <div class="spec-item" onclick="copyText('rgb(${s._r}, ${s._g}, ${s._b})', 'RGB')" title="Click to copy RGB">
-                                <span class="spec-label">RGB</span>
-                                <span class="spec-val">${s._r}, ${s._g}, ${s._b}</span>
-                            </div>
+                        <div class="compare-inline-specs">
+                            <span class="spec-chip spec-chip-hex" onclick="copyText('${hex}', 'HEX')" title="Copy HEX">${hex.toUpperCase()}</span>
+                            <span class="spec-chip" onclick="copyText('rgb(${s._r}, ${s._g}, ${s._b})', 'RGB')" title="Copy RGB">RGB ${s._r}, ${s._g}, ${s._b}</span>
                         </div>
                     </div>
                     <div class="compare-col-top">
