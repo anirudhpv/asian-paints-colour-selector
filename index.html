@@ -376,6 +376,7 @@
             overflow: auto;
             -webkit-overflow-scrolling: touch;
             padding-bottom: env(safe-area-inset-bottom, 0px);
+            user-select: none;
         }
 
         /* Desktop: Horizontal Columns */
@@ -398,6 +399,7 @@
             position: relative;
             border-right: 1px solid rgba(0, 0, 0, 0.15);
             flex-shrink: 0;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .compare-content-container.layout-horizontal .compare-col-top {
             display: flex;
@@ -443,61 +445,83 @@
             position: relative;
             border-bottom: 2px solid rgba(0, 0, 0, 0.2);
             flex-shrink: 0;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .compare-content-container.layout-vertical .compare-col-details {
             max-width: 78%;
         }
         .compare-content-container.layout-vertical .compare-col-top {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
+            align-items: center;
+            gap: 8px;
         }
 
-        .order-btn-group {
-            display: flex;
-            gap: 3px;
+        /* Dragging States */
+        .compare-col.is-dragging {
+            opacity: 0.35;
+            transform: scale(0.97);
         }
-        .order-btn {
+        .compare-col.drag-over {
+            box-shadow: inset 0 0 0 3px var(--accent), 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+
+        /* 3-Line Hamburger Drag Handle */
+        .drag-handle {
             background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             color: #fff;
-            padding: 4px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 700;
+            width: 32px;
+            height: 32px;
+            border-radius: 7px;
+            cursor: grab;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3.5px;
+            padding: 7px;
             transition: all 0.15s;
+            touch-action: none;
         }
-        .order-btn:hover:not(:disabled) {
-            background: rgba(0, 0, 0, 0.85);
+        .drag-handle:active {
+            cursor: grabbing;
+            background: var(--accent);
             border-color: var(--accent);
         }
-        .order-btn:disabled {
-            opacity: 0.2;
-            cursor: not-allowed;
+        .drag-handle:active span {
+            background: #0b0f19;
         }
+        .drag-handle span {
+            display: block;
+            width: 14px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 2px;
+            pointer-events: none;
+            transition: background 0.15s;
+        }
+
         .col-remove-btn {
             background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             transition: all 0.15s;
         }
         .col-remove-btn:hover {
             background: rgba(239, 68, 68, 0.9);
         }
 
-        /* Minimalist Single-Line / Compact Details Badge */
+        /* Sleek Minimalist Details Badge */
         .compare-col-details {
             background: rgba(11, 15, 25, 0.78);
             backdrop-filter: blur(14px);
@@ -940,7 +964,7 @@
     let renderedCount = 0;
     let activeView = 'catalogue';
     let isMinimalMode = false;
-    let colorFormat = 'hex'; // 'hex' or 'rgb'
+    let colorFormat = 'hex';
     
     let compareLayout = window.innerWidth <= 768 ? 'vertical' : 'horizontal';
 
@@ -1250,16 +1274,6 @@
         updateCardPinStyles();
     }
 
-    function moveCompare(index, direction) {
-        const newIndex = index + direction;
-        if (newIndex < 0 || newIndex >= pinnedShades.length) return;
-        const item = pinnedShades.splice(index, 1)[0];
-        pinnedShades.splice(newIndex, 0, item);
-        saveState();
-        renderFloatingPill();
-        renderCompareScreen();
-    }
-
     function clearPalette() {
         pinnedShades = [];
         saveState();
@@ -1305,6 +1319,88 @@
         }
     }
 
+    /* Drag & Drop Reordering (Mouse + Touch) */
+    let draggedIndex = null;
+
+    function handleDragStart(e, index) {
+        draggedIndex = index;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', index);
+        const col = e.target.closest('.compare-col');
+        if (col) col.classList.add('is-dragging');
+    }
+
+    function handleDragOver(e, index) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const col = e.currentTarget;
+        if (col && draggedIndex !== index) {
+            col.classList.add('drag-over');
+        }
+    }
+
+    function handleDragLeave(e) {
+        e.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleDrop(e, targetIndex) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('drag-over');
+        if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+        const movedItem = pinnedShades.splice(draggedIndex, 1)[0];
+        pinnedShades.splice(targetIndex, 0, movedItem);
+        draggedIndex = null;
+        saveState();
+        renderFloatingPill();
+        renderCompareScreen();
+    }
+
+    function handleDragEnd(e) {
+        document.querySelectorAll('.compare-col').forEach(c => {
+            c.classList.remove('is-dragging', 'drag-over');
+        });
+        draggedIndex = null;
+    }
+
+    /* Mobile Touch Drag Support */
+    let touchStartIndex = null;
+    let touchCurrentTarget = null;
+
+    function handleTouchStart(e, index) {
+        touchStartIndex = index;
+        const col = e.target.closest('.compare-col');
+        if (col) col.classList.add('is-dragging');
+    }
+
+    function handleTouchMove(e) {
+        if (touchStartIndex === null) return;
+        const touch = e.touches[0];
+        const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+        const targetCol = elementUnderTouch ? elementUnderTouch.closest('.compare-col') : null;
+
+        document.querySelectorAll('.compare-col').forEach(c => c.classList.remove('drag-over'));
+        if (targetCol && targetCol.dataset.index != touchStartIndex) {
+            targetCol.classList.add('drag-over');
+            touchCurrentTarget = parseInt(targetCol.dataset.index);
+        } else {
+            touchCurrentTarget = null;
+        }
+    }
+
+    function handleTouchEnd(e) {
+        if (touchStartIndex !== null && touchCurrentTarget !== null && touchStartIndex !== touchCurrentTarget) {
+            const movedItem = pinnedShades.splice(touchStartIndex, 1)[0];
+            pinnedShades.splice(touchCurrentTarget, 0, movedItem);
+            saveState();
+            renderFloatingPill();
+            renderCompareScreen();
+        }
+        document.querySelectorAll('.compare-col').forEach(c => c.classList.remove('is-dragging', 'drag-over'));
+        touchStartIndex = null;
+        touchCurrentTarget = null;
+    }
+
     function renderCompareScreen() {
         const count = pinnedShades.length;
         comparePageCount.textContent = count;
@@ -1318,13 +1414,8 @@
         layoutToggleBtn.textContent = isVert ? '📱 Stack' : '💻 Columns';
         formatToggleBtn.textContent = colorFormat.toUpperCase();
 
-        const prevIcon = isVert ? '↑' : '←';
-        const nextIcon = isVert ? '↓' : '→';
-
         compareContainer.innerHTML = pinnedShades.map((s, idx) => {
             const hex = s.hex || '#475569';
-            const isFirst = idx === 0;
-            const isLast = idx === pinnedShades.length - 1;
             const fam = (s.family || 'other').toLowerCase();
             const familyName = s.family ? (s.family.charAt(0).toUpperCase() + s.family.slice(1)) : 'Wall';
             const famBaseHex = getFamilyColor(fam);
@@ -1334,7 +1425,16 @@
             const copyVal = colorFormat === 'hex' ? hex.toUpperCase() : `rgb(${s._r}, ${s._g}, ${s._b})`;
 
             return `
-                <div class="compare-col" style="background: ${hex};">
+                <div class="compare-col" 
+                     style="background: ${hex};" 
+                     data-index="${idx}"
+                     draggable="true"
+                     ondragstart="handleDragStart(event, ${idx})"
+                     ondragover="handleDragOver(event, ${idx})"
+                     ondragleave="handleDragLeave(event)"
+                     ondrop="handleDrop(event, ${idx})"
+                     ondragend="handleDragEnd(event)">
+                    
                     ${isVert ? `
                         <!-- Vertical Stacked Mode: Sleek Line with Minimal Color Dot -->
                         <div class="compare-col-details">
@@ -1342,8 +1442,8 @@
                                 <span class="compare-family-dot" style="background: ${dotColor};" title="Tinting Family: ${familyName}"></span>
                                 <span class="compare-col-code">${s.code || '—'}</span>
                                 <span class="compare-col-name" title="${s.name || ''}">${s.name || '—'}</span>
-                                <span class="spec-chip-single" onclick="copyText('${copyVal}', '${colorFormat.toUpperCase()}')" title="Click to copy">${valText}</span>
                             </div>
+                            <span class="spec-chip-single" onclick="copyText('${copyVal}', '${colorFormat.toUpperCase()}')" title="Click to copy">${valText}</span>
                         </div>
                     ` : `
                         <!-- Columnar Mode: Compact Vertical Stack with Minimal Color Dot -->
@@ -1356,10 +1456,17 @@
                             <span class="spec-chip-single" onclick="copyText('${copyVal}', '${colorFormat.toUpperCase()}')" title="Click to copy" style="width: 100%; text-align: center;">${valText}</span>
                         </div>
                     `}
+                    
                     <div class="compare-col-top">
-                        <div class="order-btn-group">
-                            <button class="order-btn" ${isFirst ? 'disabled' : ''} title="Move ${isVert ? 'Up' : 'Left'}" onclick="moveCompare(${idx}, -1)">${prevIcon}</button>
-                            <button class="order-btn" ${isLast ? 'disabled' : ''} title="Move ${isVert ? 'Down' : 'Right'}" onclick="moveCompare(${idx}, 1)">${nextIcon}</button>
+                        <!-- 3-Line Hamburger Drag Handle -->
+                        <div class="drag-handle" 
+                             title="Hold and drag to reorder"
+                             ontouchstart="handleTouchStart(event, ${idx})"
+                             ontouchmove="handleTouchMove(event)"
+                             ontouchend="handleTouchEnd(event)">
+                            <span></span>
+                            <span></span>
+                            <span></span>
                         </div>
                         <button class="col-remove-btn" title="Remove" onclick="togglePin(${JSON.stringify(s).replace(/"/g, '&quot;')}); renderCompareScreen();">✕</button>
                     </div>
