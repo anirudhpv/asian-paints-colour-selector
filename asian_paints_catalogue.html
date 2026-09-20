@@ -378,7 +378,7 @@
             padding-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        /* Desktop: Horizontal Columns */
+        /* Desktop / Columnar Mode: Horizontal Side-by-Side Columns */
         .compare-content-container.layout-horizontal {
             flex-direction: row;
             height: calc(100vh - 65px);
@@ -388,12 +388,13 @@
         }
         .compare-content-container.layout-horizontal .compare-col {
             flex: 1;
-            min-width: 150px;
+            min-width: 140px;
+            max-width: 240px;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 16px 12px;
+            padding: 16px 10px;
             position: relative;
             border-right: 1px solid rgba(0, 0, 0, 0.15);
             flex-shrink: 0;
@@ -402,10 +403,40 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
+            width: 100%;
+        }
+        /* In Columnar Mode: Stack the details neatly to prevent ANY horizontal overflow */
+        .compare-content-container.layout-horizontal .compare-col-details {
+            width: 100%;
+            max-width: 100%;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .compare-content-container.layout-horizontal .compare-title-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+        .compare-content-container.layout-horizontal .compare-col-name {
+            max-width: 100%;
+            font-size: 0.78rem;
+        }
+        .compare-content-container.layout-horizontal .compare-inline-specs {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 3px;
+            margin-top: 2px;
+        }
+        .compare-content-container.layout-horizontal .spec-chip {
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 2px 4px;
         }
 
-        /* Mobile & Vertical: Full-Width Stacked Bands */
+        /* Mobile & Vertical: Full-Width Stacked Horizontal Bands */
         .compare-content-container.layout-vertical {
             flex-direction: column;
             overflow-y: auto;
@@ -415,7 +446,7 @@
         }
         .compare-content-container.layout-vertical .compare-col {
             flex: 1;
-            min-height: 110px;
+            min-height: 95px;
             width: 100%;
             display: flex;
             flex-direction: row;
@@ -445,7 +476,7 @@
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
-            padding: 4px 9px;
+            padding: 4px 8px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.82rem;
@@ -481,7 +512,7 @@
 
         /* Sleek, Non-Obtrusive Ultra-Compact Details Pill */
         .compare-col-details {
-            background: rgba(11, 15, 25, 0.72);
+            background: rgba(11, 15, 25, 0.75);
             backdrop-filter: blur(14px);
             border: 1px solid rgba(255, 255, 255, 0.22);
             padding: 6px 10px;
@@ -498,7 +529,6 @@
             align-items: baseline;
             gap: 6px;
             flex-wrap: nowrap;
-            white-space: nowrap;
         }
         .compare-col-code {
             font-size: 1.05rem;
@@ -535,11 +565,11 @@
             flex-shrink: 0;
         }
         
-        /* Ultra-compact inline specs chips */
+        /* Inline specs chips */
         .compare-inline-specs {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             font-family: ui-monospace, monospace;
             font-size: 0.72rem;
             white-space: nowrap;
@@ -551,6 +581,8 @@
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.15s;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .spec-chip:hover {
             background: rgba(56, 189, 248, 0.25);
@@ -791,27 +823,6 @@
         }
         .toast.show {
             transform: translateX(-50%) translateY(0);
-        }
-
-        @media (max-width: 768px) {
-            .compare-content-container.layout-vertical .compare-col {
-                min-height: 90px;
-                padding: 8px 10px;
-            }
-            .compare-col-details {
-                padding: 5px 8px;
-            }
-            .compare-col-code {
-                font-size: 0.95rem;
-            }
-            .compare-col-name {
-                font-size: 0.75rem;
-                max-width: 100px;
-            }
-            .compare-inline-specs {
-                font-size: 0.65rem;
-                gap: 4px;
-            }
         }
     </style>
 </head>
@@ -1330,20 +1341,37 @@
 
             return `
                 <div class="compare-col" style="background: ${hex};">
-                    <div class="compare-col-details">
-                        <div class="compare-title-row">
-                            <span class="compare-col-code">${s.code || '—'}</span>
-                            <span class="compare-col-name" title="${s.name || ''}">${s.name || '—'}</span>
-                            <span class="compare-col-family" style="background: ${badgeBg}; border: 1px solid ${badgeBorder};">
+                    ${isVert ? `
+                        <!-- Vertical Stacked Mode: Clean 2-Line Inline Badge -->
+                        <div class="compare-col-details">
+                            <div class="compare-title-row">
+                                <span class="compare-col-code">${s.code || '—'}</span>
+                                <span class="compare-col-name" title="${s.name || ''}">${s.name || '—'}</span>
+                                <span class="compare-col-family" style="background: ${badgeBg}; border: 1px solid ${badgeBorder};">
+                                    <span class="compare-family-dot" style="background: ${dotColor};"></span>
+                                    <span>${familyName}</span>
+                                </span>
+                            </div>
+                            <div class="compare-inline-specs">
+                                <span class="spec-chip spec-chip-hex" onclick="copyText('${hex}', 'HEX')" title="Copy HEX">${hex.toUpperCase()}</span>
+                                <span class="spec-chip" onclick="copyText('rgb(${s._r}, ${s._g}, ${s._b})', 'RGB')" title="Copy RGB">RGB ${s._r}, ${s._g}, ${s._b}</span>
+                            </div>
+                        </div>
+                    ` : `
+                        <!-- Columnar Mode: Dedicated Vertical Stacked Card (No Horizontal Overflow) -->
+                        <div class="compare-col-details">
+                            <div style="font-size: 1.1rem; font-weight: 800; line-height: 1.1;">${s.code || '—'}</div>
+                            <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.95; white-space: normal; line-height: 1.2;">${s.name || '—'}</div>
+                            <div class="compare-col-family" style="background: ${badgeBg}; border: 1px solid ${badgeBorder}; margin: 2px 0;">
                                 <span class="compare-family-dot" style="background: ${dotColor};"></span>
                                 <span>${familyName}</span>
-                            </span>
+                            </div>
+                            <div class="compare-inline-specs">
+                                <span class="spec-chip spec-chip-hex" onclick="copyText('${hex}', 'HEX')" title="Copy HEX" style="width: 100%; display: block; text-align: center;">${hex.toUpperCase()}</span>
+                                <span class="spec-chip" onclick="copyText('rgb(${s._r}, ${s._g}, ${s._b})', 'RGB')" title="Copy RGB" style="width: 100%; display: block; text-align: center;">RGB ${s._r}, ${s._g}, ${s._b}</span>
+                            </div>
                         </div>
-                        <div class="compare-inline-specs">
-                            <span class="spec-chip spec-chip-hex" onclick="copyText('${hex}', 'HEX')" title="Copy HEX">${hex.toUpperCase()}</span>
-                            <span class="spec-chip" onclick="copyText('rgb(${s._r}, ${s._g}, ${s._b})', 'RGB')" title="Copy RGB">RGB ${s._r}, ${s._g}, ${s._b}</span>
-                        </div>
-                    </div>
+                    `}
                     <div class="compare-col-top">
                         <div class="order-btn-group">
                             <button class="order-btn" ${isFirst ? 'disabled' : ''} title="Move ${isVert ? 'Up' : 'Left'}" onclick="moveCompare(${idx}, -1)">${prevIcon}</button>
